@@ -3,9 +3,23 @@
 
 
 
-volatile uint16_t TEMP_adc[116] = {
+volatile uint16_t TEMP_adc[131] = {
 
-
+3345,// -5
+3310,// -4
+3275,// -3
+3240,// -2
+3204,// -1
+3167,//  0
+3130,//  1
+3092,//  2
+3053,//  3
+3014,//  4
+2974,//  5
+2934,//  6
+2893,//  7
+2852,//  8
+2810,//  9
 2721,//	10
 2677,//	11
 2633,//	12
@@ -175,32 +189,30 @@ uint16_t ADC_ConverStable(unsigned char channel)
 
 
 
-
 int temp_ConverStable(void)
 {
-
     uint8_t i;
     uint16_t Temperad;
     float temp0 = 0, temp1 = 0, temp2 = 0;
 
-    
     Temperad = ADC_ConverStable(2);
 
-    for (i = 0; i < 116; i++)
+    for (i = 0; i < 131; i++)          // ← 修改长度为131
     {
         if (Temperad > TEMP_adc[i])
         {
-            temp0 = i + 10;
+            temp0 = i - 5;             // ← 关键修改：从 -5℃ 开始
             break;
         }
     }
+
     if (i == 0)
     {
-        temp0 = 10;
+        temp0 = -5;                    // ← 最低温度钳位
     }
-    else if (i >= 116)
+    else if (i >= 131)
     {
-        temp0 = 129;
+        temp0 = 125;                   // 最高温度
     }
     else
     {
@@ -208,9 +220,8 @@ int temp_ConverStable(void)
         temp2 = TEMP_adc[i - 1] - Temperad;
         temp0 = temp0 + temp2 / temp1;
     }
-    return temp0;
+    return (int)temp0;                 // 返回整数温度
 }
-
 
 
 
