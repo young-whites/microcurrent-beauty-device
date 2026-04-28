@@ -1,0 +1,89 @@
+#include "eptCtrl.h"
+
+
+
+
+
+
+
+/**
+  * @brief  K1手柄微电流引脚配置
+  * @param  None
+  * @retval None
+  */
+void EPT_Current_GPIO_Config(void)
+{
+    /*配置 P07 VCC_ION 引脚为CPP模块的PWM输出模式 -- 这个引脚是用来控制电压大小的*/
+    SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
+    CCP_Config_PWM_Mode();
+
+    /*配置 P00 ION_FREQA 引脚为 普通GPIO 模式*/
+    SYS_SET_IOCFG(IOP00CFG, SYS_IOCFG_P00_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO0, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_SetPin(GPIO0, GPIO_PIN_0_MSK);
+
+    /*配置 P06 ION_FREQB 引脚为 普通 模式*/
+    SYS_SET_IOCFG(IOP06CFG, SYS_IOCFG_P06_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO0, GPIO_PIN_6, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_SetPin(GPIO0, GPIO_PIN_6_MSK);
+
+    /*配置 P12 ION_ENA   引脚为普通GPIO模式*/
+    SYS_SET_IOCFG(IOP12CFG, SYS_IOCFG_P12_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO1, GPIO_PIN_2, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_SetPin(GPIO1, GPIO_PIN_2_MSK);
+
+    /*配置 P40 ION_ENB   引脚为普通GPIO模式*/
+    SYS_SET_IOCFG(IOP40CFG, SYS_IOCFG_P40_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO4, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_SetPin(GPIO4, GPIO_PIN_0_MSK);
+
+    /*配置 P10 ION_ENAB  引脚为普通GPIO模式*/
+    SYS_SET_IOCFG(IOP10CFG, SYS_IOCFG_P10_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO1, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);
+
+    /*配置 P31 ION_DUTYA 引脚为普通GPIO模式*/
+    SYS_SET_IOCFG(IOP31CFG, SYS_IOCFG_P31_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO3, GPIO_PIN_1, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_SetPin(GPIO3, GPIO_PIN_1_MSK);
+
+    /******************************** 以上引脚的配置与微电流的控制有关（与门输入控制） ************************************************/
+    /* 制冷热的EPWM2配置为普通GPIO，避免开启制冷或者制热，产生冲突 */
+    SYS_SET_IOCFG(IOP24CFG, SYS_IOCFG_P24_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO2, GPIO_PIN_4, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_ResetPin(GPIO2, GPIO_PIN_4_MSK);
+}
+
+
+
+
+void EPT_ChannelA_On(void)
+{
+    GPIO_SetPin(GPIO0, GPIO_PIN_0_MSK);      //ION_FREQA
+    GPIO_ResetPin(GPIO0, GPIO_PIN_6_MSK);    //ION_FREQB
+    GPIO_SetPin(GPIO1, GPIO_PIN_2_MSK);      //ION_ENA
+    GPIO_SetPin(GPIO4, GPIO_PIN_0_MSK);      //ION_ENB
+    GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);      //ION_ENAB
+    GPIO_SetPin(GPIO3, GPIO_PIN_1_MSK);      //ION_DUTYA
+}
+
+
+void EPT_ChannelB_On(void)
+{
+    GPIO_ResetPin(GPIO0, GPIO_PIN_0_MSK);    //ION_FREQA
+    GPIO_SetPin(GPIO0, GPIO_PIN_6_MSK);      //ION_FREQB
+    GPIO_SetPin(GPIO1, GPIO_PIN_2_MSK);      //ION_ENA
+    GPIO_SetPin(GPIO4, GPIO_PIN_0_MSK);      //ION_ENB
+    GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);      //ION_ENAB
+    GPIO_SetPin(GPIO3, GPIO_PIN_1_MSK);      //ION_DUTYA
+}
+
+void EPT_ChannelAB_Off(void)
+{
+    GPIO_ResetPin(GPIO0, GPIO_PIN_0_MSK);    //ION_FREQA
+    GPIO_ResetPin(GPIO0, GPIO_PIN_6_MSK);    //ION_FREQB
+    GPIO_SetPin(GPIO1, GPIO_PIN_2_MSK);      //ION_ENA
+    GPIO_SetPin(GPIO4, GPIO_PIN_0_MSK);      //ION_ENB
+    GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);      //ION_ENAB
+    GPIO_SetPin(GPIO3, GPIO_PIN_1_MSK);      //ION_DUTYA
+}
