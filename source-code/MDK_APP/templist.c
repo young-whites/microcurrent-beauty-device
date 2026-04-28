@@ -224,22 +224,3 @@ int temp_ConverStable(void)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
