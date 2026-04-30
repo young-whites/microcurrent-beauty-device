@@ -13,6 +13,9 @@ void Old_Test(void)
 			if (Record.OldStartCnt == 1)
 			{
 				BEEP_Blink(1, 0, 0);
+
+
+
 			}
 		}
 	}

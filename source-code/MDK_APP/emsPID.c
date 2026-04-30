@@ -4,6 +4,9 @@
 EMS_Temp_TypeDef	EMS_Temp;
 EMS_PID_TypeDef		EMS_PID;
 
+/* 测试模式标志: 1=制冷片直接拉高, 屏蔽PID */
+INT8U EMS_CoolTestMode = 0;
+
 
 
 /* ====================== GPIO & 开关 ====================== */
@@ -27,6 +30,9 @@ void SetEMS_CoolGears(void)
 /* ====================== 温度扫描 + PID ====================== */
 void EMS_Cool_TempScan(void)
 {
+	/* 测试模式: 跳过PID, 制冷片已由 GPIO 拉高 */
+	if (EMS_CoolTestMode == 1) return;
+
 	EMS_Temp.tGetTemp = temp_ConverStable();
 	EMSTemp_CalcPID();
 
@@ -77,4 +83,44 @@ void EMSTemp_CalcPID(void)
 
 	if (EMS_PID.Uk < EMSCool_DTY_Min) EMS_PID.Uk = EMSCool_DTY_Min;
 	if (EMS_PID.Uk > EMSCool_DTY_Max) EMS_PID.Uk = EMSCool_DTY_Max;
+}
+
+
+/* ====================== 硬件测试模式 ====================== */
+/*
+ * EMS_CoolTest_Enable: 进入制冷片硬件测试模式
+ * 将 P30 从 CCP0A (PWM) 重新配置为普通 GPIO 并拉高,
+ * 同时屏蔽 PID 控制, 制冷片全功率运行.
+ */
+void EMS_CoolTest_Enable(void)
+{
+	/* 停止 CCP0 PWM 输出 */
+	CCP_Stop(CCP0);
+
+	/* 将 P30 重新配置为普通 GPIO 推挽输出 */
+	SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_GPIO);
+	GPIO_CONFIG_IO_MODE(GPIO3, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+
+	/* 拉高引脚 -> 制冷片全功率 */
+	GPIO_SetPin(GPIO3, GPIO_PIN_0_MSK);
+
+	/* 设置测试模式标志, EMS_Cool_TempScan 将跳过 PID */
+	EMS_CoolTestMode = 1;
+}
+
+
+/*
+ * EMS_CoolTest_Disable: 退出制冷片硬件测试模式
+ * 恢复 P30 为 CCP0A (PWM) 模式, PID 控制恢复.
+ */
+void EMS_CoolTest_Disable(void)
+{
+	/* 先拉低引脚 */
+	GPIO_ResetPin(GPIO3, GPIO_PIN_0_MSK);
+
+	/* 恢复 P30 为 CCP0A PWM 模式 */
+	SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
+
+	/* 清除测试模式标志 */
+	EMS_CoolTestMode = 0;
 }

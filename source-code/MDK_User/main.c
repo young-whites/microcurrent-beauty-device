@@ -87,13 +87,20 @@ int main(void)
 		{
 			while (Record.EMS_HotCnt == 1)
 			{
-				EMS_Heat_On();           // 开启制冷PWM
+				/* 测试模式下跳过CCP控制, P30已由GPIO拉高 */
+				if (EMS_CoolTestMode == 0)
+				{
+					EMS_Heat_On();           // 开启制冷PWM
+				}
 				Record.EMS_HotCnt = 0;
 			}
 		}
 		else
 		{
-			EMS_Heat_Off();
+			if (EMS_CoolTestMode == 0)
+			{
+				EMS_Heat_Off();
+			}
 		}
 
 

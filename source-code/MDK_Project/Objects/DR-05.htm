@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\DR-05.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\DR-05.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 30 19:35:43 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 30 10:57:24 2026
 <BR><P>
 <H3>Maximum Stack Usage =        144 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -409,37 +409,37 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Init
 </UL>
 
-<P><STRONG><a name="[49]"></a>APP_DecodeCmd</STRONG> (Thumb, 1994 bytes, Stack size 16 bytes, protocol_app.o(i.APP_DecodeCmd))
+<P><STRONG><a name="[49]"></a>APP_DecodeCmd</STRONG> (Thumb, 1974 bytes, Stack size 16 bytes, protocol_app.o(i.APP_DecodeCmd))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = APP_DecodeCmd &rArr; APP_RespFrame &rArr; APP_SendFrame &rArr; UART1_SendBytes &rArr; FIFO_In &rArr; FIFO_IsFull &rArr; __aeabi_idivmod
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_Start
+<BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_Start
 <LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TICK_Stop
-<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPT_Current_GPIO_Config
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_Stop
 <LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Refr_EMSIonStreng
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Stop
 <LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Stop
 <LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Blink
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BEEP_ShortPress
-<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TICK_Start
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
-<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_StopAll
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TICK_Start
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_StopAll
+<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
 <LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;K1_Current_GPIO_Config
-<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_On
-<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_Off
+<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_On
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_Off
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_RespFrame
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3_6_Stop
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1_Stop
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3_6_Stop
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1_Stop
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_GPIO_Config
 </UL>
 <BR>[Called By]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeFrame
@@ -615,7 +615,7 @@ Global Symbols
 <P><STRONG><a name="[84]"></a>CCP_ConfigCLK</STRONG> (Thumb, 108 bytes, Stack size 12 bytes, psfr_ccp.o(i.CCP_ConfigCLK))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = CCP_ConfigCLK
 </UL>
-<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 </UL>
 
 <P><STRONG><a name="[72]"></a>CCP_ConfigCompare</STRONG> (Thumb, 136 bytes, Stack size 8 bytes, psfr_ccp.o(i.CCP_ConfigCompare))
@@ -633,14 +633,14 @@ Global Symbols
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigCompare
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
 </UL>
-<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timing1_2ms
 <LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Refr_EMSIonStreng
 <LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[61]"></a>CCP_Config_PWM_Mode</STRONG> (Thumb, 162 bytes, Stack size 8 bytes, ccp.o(i.CCP_Config_PWM_Mode))
+<P><STRONG><a name="[5f]"></a>CCP_Config_PWM_Mode</STRONG> (Thumb, 162 bytes, Stack size 8 bytes, ccp.o(i.CCP_Config_PWM_Mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = CCP_Config_PWM_Mode &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
 </UL>
 <BR>[Calls]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYS_EnablePeripheralClk
@@ -653,22 +653,22 @@ Global Symbols
 <LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
 </UL>
 <BR>[Called By]<UL><LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPT_Current_GPIO_Config
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
 <LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;K1_Current_GPIO_Config
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_GPIO_Config
 </UL>
 
 <P><STRONG><a name="[86]"></a>CCP_DisableReverseOutput</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_DisableReverseOutput))
-<BR><BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR><BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 </UL>
 
 <P><STRONG><a name="[85]"></a>CCP_EnablePWMMode</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_EnablePWMMode))
-<BR><BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR><BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 </UL>
 
 <P><STRONG><a name="[88]"></a>CCP_EnableRun</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_EnableRun))
-<BR><BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR><BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 </UL>
 
 <P><STRONG><a name="[11]"></a>CCP_IRQHandler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, cms32f033_it.o(i.CCP_IRQHandler))
@@ -680,16 +680,16 @@ Global Symbols
 <LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
 </UL>
 
-<P><STRONG><a name="[57]"></a>CCP_Start</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_Start))
+<P><STRONG><a name="[55]"></a>CCP_Start</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_Start))
 <BR><BR>[Called By]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Heat_On
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 </UL>
 
 <P><STRONG><a name="[4a]"></a>CCP_Stop</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_Stop))
-<BR><BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR><BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemWorkStatusCheck
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Heat_Off
 <LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -700,10 +700,10 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = Choose_WaterARR &rArr; AutoSet_WaterStreng &rArr; CCP_ConfigCompare
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AutoSet_WaterStreng
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Stop
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenA
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
+<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer0_Timing1_1ms
 </UL>
@@ -712,10 +712,10 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = Choose_WaterARR_Trapezoid &rArr; AutoSet_WaterStreng &rArr; CCP_ConfigCompare
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AutoSet_WaterStreng
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Stop
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenA
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
+<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer0_Timing1_1ms
 </UL>
@@ -793,7 +793,7 @@ Global Symbols
 <P><STRONG><a name="[4e]"></a>EMS_GPIO_Config</STRONG> (Thumb, 170 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_GPIO_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = EMS_GPIO_Config &rArr; CCP_Config_PWM_Mode &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
 </UL>
-<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
@@ -814,26 +814,26 @@ Global Symbols
 <P><STRONG><a name="[a4]"></a>EMS_Heat_On</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, emspid.o(i.EMS_Heat_On))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = EMS_Heat_On
 </UL>
-<BR>[Calls]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
+<BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
 </UL>
 <BR>[Called By]<UL><LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[58]"></a>EMS_Wave_1</STRONG> (Thumb, 208 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_1))
+<P><STRONG><a name="[56]"></a>EMS_Wave_1</STRONG> (Thumb, 208 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_1))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = EMS_Wave_1 &rArr; EPWM_ConfigChannelSymDutyScale
 </UL>
 <BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_EnableDownCmpInt
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelPeriod
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ClearDownCmpIntFlag
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelSymDutyScale
 </UL>
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[5c]"></a>EMS_Wave_1_Stop</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_1_Stop))
+<P><STRONG><a name="[5a]"></a>EMS_Wave_1_Stop</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_1_Stop))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = EMS_Wave_1_Stop
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Stop
@@ -841,22 +841,22 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[59]"></a>EMS_Wave_3</STRONG> (Thumb, 222 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_3))
+<P><STRONG><a name="[57]"></a>EMS_Wave_3</STRONG> (Thumb, 222 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_3))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = EMS_Wave_3 &rArr; EPWM_ConfigChannelSymDutyScale
 </UL>
 <BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_EnableDownCmpInt
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelSymDuty
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelPeriod
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ClearDownCmpIntFlag
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelSymDutyScale
 </UL>
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[5b]"></a>EMS_Wave_3_6_Stop</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_3_6_Stop))
+<P><STRONG><a name="[59]"></a>EMS_Wave_3_6_Stop</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_3_6_Stop))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = EMS_Wave_3_6_Stop
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Stop
@@ -864,15 +864,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[5a]"></a>EMS_Wave_6</STRONG> (Thumb, 222 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_6))
+<P><STRONG><a name="[58]"></a>EMS_Wave_6</STRONG> (Thumb, 222 bytes, Stack size 8 bytes, emsctrl.o(i.EMS_Wave_6))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = EMS_Wave_6 &rArr; EPWM_ConfigChannelSymDutyScale
 </UL>
 <BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_EnableDownCmpInt
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelSymDuty
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelPeriod
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ClearDownCmpIntFlag
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Start
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ConfigChannelSymDutyScale
 </UL>
@@ -909,7 +909,7 @@ Global Symbols
 <P><STRONG><a name="[51]"></a>EPT_Current_GPIO_Config</STRONG> (Thumb, 414 bytes, Stack size 8 bytes, eptctrl.o(i.EPT_Current_GPIO_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = EPT_Current_GPIO_Config &rArr; CCP_Config_PWM_Mode &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
 </UL>
-<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetPin
 </UL>
@@ -919,9 +919,9 @@ Global Symbols
 
 <P><STRONG><a name="[a6]"></a>EPWM_ClearDownCmpIntFlag</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_ClearDownCmpIntFlag))
 <BR><BR>[Called By]<UL><LI><a href="#[13]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_IRQHandler
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 </UL>
 
 <P><STRONG><a name="[ad]"></a>EPWM_ClearUpCmpIntFlag</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_ClearUpCmpIntFlag))
@@ -959,9 +959,9 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_EPWM_Config_Independent_Mode
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config_Independent_Mode
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 </UL>
 
 <P><STRONG><a name="[a1]"></a>EPWM_ConfigChannelSymDuty</STRONG> (Thumb, 74 bytes, Stack size 8 bytes, psfr_epwm.o(i.EPWM_ConfigChannelSymDuty))
@@ -969,8 +969,8 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_EPWM_Config_Independent_Mode
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config_Independent_Mode
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
 </UL>
 
 <P><STRONG><a name="[a5]"></a>EPWM_ConfigChannelSymDutyScale</STRONG> (Thumb, 128 bytes, Stack size 24 bytes, psfr_epwm.o(i.EPWM_ConfigChannelSymDutyScale))
@@ -978,9 +978,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<BR>[Called By]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 </UL>
 
 <P><STRONG><a name="[99]"></a>EPWM_ConfigLoadAndIntMode</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, psfr_epwm.o(i.EPWM_ConfigLoadAndIntMode))
@@ -1014,7 +1014,7 @@ Global Symbols
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_SetPriority
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_EnableIRQ
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYS_EnablePeripheralClk
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Stop
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config
@@ -1039,9 +1039,9 @@ Global Symbols
 <P><STRONG><a name="[97]"></a>EPWM_EnableDownCmpInt</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_EnableDownCmpInt))
 <BR><BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_EPWM_Config_Independent_Mode
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config_Independent_Mode
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 </UL>
 
 <P><STRONG><a name="[9a]"></a>EPWM_EnableOutput</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_EnableOutput))
@@ -1069,7 +1069,7 @@ Global Symbols
 <P><STRONG><a name="[13]"></a>EPWM_IRQHandler</STRONG> (Thumb, 232 bytes, Stack size 8 bytes, cms32f033_it.o(i.EPWM_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = EPWM_IRQHandler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
+<BR>[Calls]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Start
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_GetUpCmpIntFlag
 <LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_GetDownCmpIntFlag
 <LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_ClearUpCmpIntFlag
@@ -1078,15 +1078,15 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_cms32f033x.o(RESET)
 </UL>
-<P><STRONG><a name="[5f]"></a>EPWM_Start</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_Start))
+<P><STRONG><a name="[5d]"></a>EPWM_Start</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_Start))
 <BR><BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config_Independent_Mode
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Choose_WaterARR_Trapezoid
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Choose_WaterARR
 <LI><a href="#[13]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_IRQHandler
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 </UL>
 
 <P><STRONG><a name="[4c]"></a>EPWM_Stop</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, psfr_epwm.o(i.EPWM_Stop))
@@ -1098,8 +1098,8 @@ Global Symbols
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemWorkStatusCheck
 <LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
-<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3_6_Stop
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1_Stop
+<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3_6_Stop
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1_Stop
 </UL>
 
 <P><STRONG><a name="[af]"></a>FIFO_In</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, usart.o(i.FIFO_In))
@@ -1187,11 +1187,11 @@ Global Symbols
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BEEP_OutOff
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BEEP_GPIO_Config
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenA
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
-<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_StopAll
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_StopAll
+<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
 <LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;K1_Current_GPIO_Config
-<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_Off
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_Off
 </UL>
 
 <P><STRONG><a name="[7a]"></a>GPIO_SetPin</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, psfr_gpio.o(i.GPIO_SetPin))
@@ -1203,13 +1203,13 @@ Global Symbols
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Out
 <LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BEEP_OutOn
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenA
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SNE_Current_GPIO_Config
+<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SN74HC21D_OpenB
 <LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;K1_Current_GPIO_Config
-<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_On
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
-<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
+<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HeatDissipation_On
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_6
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_3
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_Wave_1
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_GPIO_Config
 </UL>
 
@@ -1246,7 +1246,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[54]"></a>HeatDissipation_Off</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, oldtest.o(i.HeatDissipation_Off))
+<P><STRONG><a name="[63]"></a>HeatDissipation_Off</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, oldtest.o(i.HeatDissipation_Off))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HeatDissipation_Off
 </UL>
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetPin
@@ -1254,7 +1254,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[55]"></a>HeatDissipation_On</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, oldtest.o(i.HeatDissipation_On))
+<P><STRONG><a name="[62]"></a>HeatDissipation_On</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, oldtest.o(i.HeatDissipation_On))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HeatDissipation_On
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
@@ -1290,7 +1290,7 @@ Global Symbols
 <P><STRONG><a name="[50]"></a>K1_Current_GPIO_Config</STRONG> (Thumb, 316 bytes, Stack size 8 bytes, k1ctrl.o(i.K1_Current_GPIO_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = K1_Current_GPIO_Config &rArr; CCP_Config_PWM_Mode &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
 </UL>
-<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetPin
 </UL>
@@ -1401,7 +1401,7 @@ Global Symbols
 <LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[56]"></a>LED_On</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, bsp_led.o(i.LED_On))
+<P><STRONG><a name="[54]"></a>LED_On</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, bsp_led.o(i.LED_On))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = LED_On &rArr; LED_Out &rArr; __ARM_common_switch8
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Out
@@ -1418,7 +1418,7 @@ Global Symbols
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetPin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
+<BR>[Called By]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_DrvScan
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Off
 </UL>
@@ -1456,7 +1456,7 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Choose_WaterARR
 </UL>
 
-<P><STRONG><a name="[5e]"></a>SN74HC21D_OpenB</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, sn74hc21d.o(i.SN74HC21D_OpenB))
+<P><STRONG><a name="[5c]"></a>SN74HC21D_OpenB</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, sn74hc21d.o(i.SN74HC21D_OpenB))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SN74HC21D_OpenB
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
@@ -1467,7 +1467,7 @@ Global Symbols
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[60]"></a>SN74HC21D_StopAll</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, sn74hc21d.o(i.SN74HC21D_StopAll))
+<P><STRONG><a name="[5e]"></a>SN74HC21D_StopAll</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, sn74hc21d.o(i.SN74HC21D_StopAll))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SN74HC21D_StopAll
 </UL>
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetPin
@@ -1475,10 +1475,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[63]"></a>SNE_Current_GPIO_Config</STRONG> (Thumb, 414 bytes, Stack size 8 bytes, snectrl.o(i.SNE_Current_GPIO_Config))
+<P><STRONG><a name="[61]"></a>SNE_Current_GPIO_Config</STRONG> (Thumb, 414 bytes, Stack size 8 bytes, snectrl.o(i.SNE_Current_GPIO_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = SNE_Current_GPIO_Config &rArr; CCP_Config_PWM_Mode &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
 </UL>
-<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetPin
 <LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetPin
 </UL>
@@ -1546,7 +1546,7 @@ Global Symbols
 
 <P><STRONG><a name="[40]"></a>SYS_EnablePeripheralClk</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, psfr_system.o(i.SYS_EnablePeripheralClk))
 <BR><BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EMS_EPWM_Config_Independent_Mode
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPWM_Config_Independent_Mode
 <LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR1_Config
@@ -1617,7 +1617,7 @@ Global Symbols
 <P><STRONG><a name="[e2]"></a>SystemWorkStatusCheck</STRONG> (Thumb, 412 bytes, Stack size 8 bytes, sys.o(i.SystemWorkStatusCheck))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = SystemWorkStatusCheck &rArr; LED_On &rArr; LED_Out &rArr; __ARM_common_switch8
 </UL>
-<BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
+<BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_PowerOn
 <LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_PowerOff
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_Stop
@@ -1644,7 +1644,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Config
 </UL>
 
-<P><STRONG><a name="[62]"></a>TICK_Start</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, psfr_tick.o(i.TICK_Start))
+<P><STRONG><a name="[60]"></a>TICK_Start</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, psfr_tick.o(i.TICK_Start))
 <BR><BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
@@ -1681,7 +1681,7 @@ Global Symbols
 <P><STRONG><a name="[ee]"></a>TMR1_Config</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, timer.o(i.TMR1_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = TMR1_Config &rArr; TMR_ConfigRunMode
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_Start
+<BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_Start
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_SetPeriod
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_EnableOverflowInt
 <LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR_DisableOneShotMode
@@ -1751,7 +1751,7 @@ Global Symbols
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR0_Config
 </UL>
 
-<P><STRONG><a name="[5d]"></a>TMR_Start</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, psfr_timer.o(i.TMR_Start))
+<P><STRONG><a name="[5b]"></a>TMR_Start</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, psfr_timer.o(i.TMR_Start))
 <BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TMR1_Config
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
@@ -2062,7 +2062,7 @@ Local Symbols
 <P><STRONG><a name="[87]"></a>NVIC_SetPriority</STRONG> (Thumb, 110 bytes, Stack size 8 bytes, ccp.o(i.NVIC_SetPriority))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
+<BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Config_PWM_Mode
 </UL>
 
 <P><STRONG><a name="[94]"></a>NVIC_EnableIRQ</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, epwm.o(i.NVIC_EnableIRQ))
@@ -2137,7 +2137,7 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[c9]"></a>_On</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, bsp_led.o(i._On))
-<BR><BR>[Called By]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
+<BR><BR>[Called By]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_DrvScan
 </UL>
 
