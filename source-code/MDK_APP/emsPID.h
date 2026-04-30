@@ -33,9 +33,4 @@ void EMS_Heat_GPIO_Config(void);     // 改成制冷GPIO也行
 void EMS_Heat_On(void);
 void EMS_Heat_Off(void);
 
-// ====================== 硬件测试模式 ======================
-extern INT8U EMS_CoolTestMode;       // 1=测试模式: P30拉高, 屏蔽PID
-void EMS_CoolTest_Enable(void);      // 进入测试模式: P30配置为GPIO并拉高
-void EMS_CoolTest_Disable(void);     // 退出测试模式: 恢复CCP0A PWM控制
-
 #endif

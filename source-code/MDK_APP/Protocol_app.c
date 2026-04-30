@@ -128,6 +128,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			{
 				vaildCmd = 1;
 				Flag.WorkStart = Frame->list.para[0];
+				
 			}
 			break;
 
@@ -243,6 +244,14 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					/* 把上位机传过来的参数数据赋给EMS的工作状态标志 */
 					Record.Switch = Frame->list.para[0];
 
+					
+					if(Record.Switch == 0){
+							HeatDissipation_Off();  // 关闭散热
+					}
+					else{
+							HeatDissipation_On();  // 开启散热
+					}
+					
 					if ((Record.Switch == 1) && ((Record.HandWave == 1) || (Record.HandWave == 2) || (Record.HandWave == 3)))
 					{
 						LED_On(LED_Name_EMSLED);
