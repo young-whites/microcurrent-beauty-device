@@ -56,6 +56,8 @@ int main(void)
 	SystemParaInit();
 	// 初始化PID
 	EMS_CoolPID_Init();        
+	// 初始化散热控制引脚
+	HeatDissipation_GPIO_Config();
 
 	/***/
 	while(1)

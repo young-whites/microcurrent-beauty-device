@@ -545,10 +545,12 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					if (Record.EMS_HotGears != 0)
 					{
 						Record.EMS_HotCnt = 1;
+						HeatDissipation_On();  // 开启散热
 					}
 					else
 					{
 						Record.EMS_HotCnt = 0;
+						HeatDissipation_Off();  // 关闭散热
 					}
 				}break;
 				
