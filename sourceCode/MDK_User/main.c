@@ -39,8 +39,6 @@ int main(void)
 	#endif
 	/* 串口1工作模式配置 */
 	UART1_Init(9600);
-	/* 手柄识别的ADC引脚配置 */
-	ADC_Config(ADC1_CH_10_MSK, ADC1_CH_10);
 	/* EMS-NTC温度检测的ADC引脚配置 */
 	ADC_Config(ADC1_CH_9_MSK, ADC1_CH_9);
 	/* EMS加热丝引脚初始化 */
