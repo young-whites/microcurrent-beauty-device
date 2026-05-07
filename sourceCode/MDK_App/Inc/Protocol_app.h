@@ -21,17 +21,7 @@
 #define		SET_OLD_MODE				(0x05)		// 功能码：进入老化模式
 #define		FRAME_FUNC_UPGRADE			(0xAA)		// 功能吗：远程升级
 
-#define		FRAME_FUNC_HAND_EMS			(0x02)		// 功能码：EMS界面进入
-#define		SET_HAND_EMS_WORK			(0x09)		// 功能码：EMS手柄工作启停
-#define		SET_HAND_EMS_Level			(0x0A)		// 功能码：挡位调节
-#define		SET_HAND_EMS_Heat_Level		(0x0B)		// 功能码：热量调节
-#define		SET_HAND_EMS_WAVE_MODEL		(0x03)		// 功能吗：选择波形模式
-
-#define		FRAME_FUNC_NTCERR			(0xFF)		// 功能码:异常状态
-#define		FRAME_FUNC_HAND				(0x0B)		// 功能码:手柄状态
-//------------------------------------------------------------------------
-#define		FRAME_FAULT_NTC				(0x01)		// 异常码:NTC探头异常
-#define		FRAME_FAULT_TEMPH			(0x02)		// 异常码:温度过高
+#define		SET_COOLING_LEVEL			(0x0C)		// Cooling target temperature level
 //------------------------------------------------------------------------
 #define		PARA_SIZE_MAX				(3)			// 最大支持的参数列表长度
 #define		TIME_OVER_TIME				(2000)		// 超时时间 2 秒

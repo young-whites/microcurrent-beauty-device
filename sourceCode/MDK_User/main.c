@@ -1,5 +1,8 @@
 #include "cms32f033x.h"
 #include "sys.h"
+#include "bsp_pid.h"
+#include "bsp_hard.h"
+#include "adc.h"
 
 
 
@@ -16,7 +19,7 @@ int main(void)
 	/*单片机所有端口优先级初始化，不用改动*/
 	All_GPIO_NVIC_Config();
 	/*配置 定时器0\1定时器1*/
-	TMR0_Config();
+	// TMR0_Config();
 	TMR1_Config();
 	/*开启硬件除法器*/
 	HWDIV_Open();
@@ -41,10 +44,9 @@ int main(void)
 	UART1_Init(9600);
 	/* EMS-NTC温度检测的ADC引脚配置 */
 	ADC_Config(ADC1_CH_9_MSK, ADC1_CH_9);
-	/* EMS加热丝引脚初始化 */
-	Cold_Enable_GPIO_Config();
-	/* 散热控制引脚初始化 */
-	HeatDissipation_GPIO_Config();
+	/* Cooling subsystem initialized on-demand by PID control */
+	/* Initialize cooling PWM subsystem (CCP0) */
+	Cooling_Init();
 	/**********************以上配置为系统芯片与相关外设的初始化相关***************************************/
 	/* 系统参数初始化 */
 	SystemParaInit();
@@ -55,6 +57,7 @@ int main(void)
 		
 		UART1_SendScan();						// UART1 发送扫描
 		UART1_RecvScan();						// UART1 接收扫描
+		ADC_DrvScan();							// Trigger ADC scan for NTC temperature sampling
 		
 		SystemWorkStatusCheck();		
 		if (Flag.update == 1)
@@ -73,12 +76,9 @@ int main(void)
 			/***********************************************************/
 			/*                 蓝牙断开关闭所有功能                    */
 			/***********************************************************/
-			/* 所有的EPWM时钟关闭 */
-			EPWM_Stop(EPWM_CH_1_MSK | EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK | EPWM_CH_5_MSK);
-			/* 关闭CCP0 和 CCP1  */
-			CCP_Stop(CCP0);
-			CCP_Stop(CCP1);
-			TMR_Stop(TMR0);
+			/* Stop cooling on bluetooth disconnect */
+			PID_SetEnabled(0);
+			Cooling_Off();
 		}		
 	}
 }

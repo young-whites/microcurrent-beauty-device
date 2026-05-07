@@ -1,4 +1,6 @@
 #include "Timing.h"
+#include "bsp_pid.h"
+#include "bsp_hard.h"
 
 
 
@@ -68,7 +70,12 @@ void Timing1_50ms(void)
 *****************************************************************************/
 void Timing1_100ms(void)
 {
-
+    /* Update cooling PID control */
+    if (Flag.WorkStart && g_cooling_pid.enabled)
+    {
+        PID_Update();
+        Cooling_SetPower(PID_GetOutput());
+    }
 }
 
 

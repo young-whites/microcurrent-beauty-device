@@ -15,7 +15,6 @@ extern INT8U Water_PwmDiv[6];
 
 
 void EPWM_Config_Independent_Mode(uint32_t chMask, INT32U Freq[6], INT8U Div[6]);
-void EPWM_Config(void);
 
 
 

@@ -1,4 +1,6 @@
 #include "Protocol_app.h"
+#include "bsp_pid.h"
+#include "bsp_hard.h"
 
 
 
@@ -103,17 +105,23 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			/*****************************************************************************************************/
 			/*设置设备启动/停机*/
 			/*****************************************************************************************************/
-			case FRAME_FUNC_RUN: 
+			case FRAME_FUNC_RUN:
 			{
 				vaildCmd = 1;
 				Flag.WorkStart = Frame->list.para[0];
-				
-				if(Flag.WorkStart == 1)
+
+				if (Flag.WorkStart == 1)
 				{
-					HeatDissipation_On();
+					/* Enable cooling: init PID, start cooling subsystem */
+					PID_Init();
+					Cooling_Init();
+					PID_SetEnabled(1);
 				}
-				else{
-					HeatDissipation_Off();
+				else
+				{
+					/* Disable cooling */
+					PID_SetEnabled(0);
+					Cooling_Off();
 				}
 			}
 			break;
@@ -161,7 +169,18 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 		{
 			switch(Frame->list.func)
 			{	
-
+				case SET_COOLING_LEVEL:
+				{
+					vaildCmd = 1;
+					/* para[0]: cooling level 1~5 maps to temperature range */
+					/* Level 1 = 20C, Level 2 = 17C, Level 3 = 13C, Level 4 = 8C, Level 5 = 5C */
+					static const int16_t level_to_temp[] = {200, 170, 130, 80, 50};
+					uint8_t level = Frame->list.para[0];
+					if (level >= 1 && level <= 5)
+					{
+						PID_SetTarget(level_to_temp[level - 1]);
+					}
+				}break;
 
 	
 				default:
@@ -184,7 +203,15 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					vaildCmd = 1;
 					Frame->list.len+=2;
 					Frame->list.para[0] = MAJ_VERSION;
-					Frame->list.para[1] = SUB_VERSION; 
+					Frame->list.para[1] = SUB_VERSION;
+				}break;
+
+			case 0x41:
+				{
+					vaildCmd = 1;
+					Frame->list.len += 2;
+					Frame->list.para[0] = (INT8U)(g_cooling_pid.current_temp >> 8);
+					Frame->list.para[1] = (INT8U)(g_cooling_pid.current_temp & 0xFF);
 				}break;
 		
 				

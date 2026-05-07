@@ -2,24 +2,24 @@
 
 
 /**
-  * @brief  散热控制使能引脚初始化 (P25)
+  * @brief  Heat dissipation fan GPIO init (P25)
   * @param  None
   * @retval None
   */
 void HeatDissipation_GPIO_Config(void)
 {
-    /* P25 配置为普通 GPIO 模式 */
+    /* P25 configured as GPIO */
     SYS_SET_IOCFG(IOP25CFG, SYS_IOCFG_P25_GPIO);
-    
-    /* 配置为推挽输出模式 */
+
+    /* Push-pull output mode */
     GPIO_CONFIG_IO_MODE(GPIO2, GPIO_PIN_5, GPIO_MODE_OUTPUT_PUSH_PULL);
-    
-    /* 初始化为关闭状态（低电平）—— 安全第一 */
+
+    /* Default off (low) -- safety first */
     GPIO_ResetPin(GPIO2, GPIO_PIN_5_MSK);
 }
 
 /**
-  * @brief  开启散热（P25 输出高电平）
+  * @brief  Turn on heat dissipation fan (P25 high)
   * @param  None
   * @retval None
   */
@@ -29,7 +29,7 @@ void HeatDissipation_On(void)
 }
 
 /**
-  * @brief  关闭散热（P25 输出低电平）
+  * @brief  Turn off heat dissipation fan (P25 low)
   * @param  None
   * @retval None
   */
@@ -39,20 +39,48 @@ void HeatDissipation_Off(void)
 }
 
 
-
-
-/**************************************************************************
-* 功能:	发热丝 端口初始化
-***************************************************************************/
+/**
+  * @brief  Cooling pad GPIO init (P30 as CCP0A for PWM)
+  * @param  None
+  * @retval None
+  */
 void Cold_Enable_GPIO_Config(void)
 {
-	SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
+    SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
 }
 
+/**
+  * @brief  Initialize cooling subsystem
+  *         Configures CCP0 for PWM output on P30 (CCP0A)
+  */
+void Cooling_Init(void)
+{
+    Cold_Enable_GPIO_Config();
 
+    /* Configure CCP0 for cooling PWM at 1kHz */
+    SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
+    CCP_ConfigCLK(CCP0, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);  // Pclk=3MHz/3000=1kHz
+    CCP_EnablePWMMode(CCP0);
+    CCP_ConfigDutyScale(CCP0, CCPxA, 0);   // Start at 0%
+    CCP_DisableReverseOutput(CCP0, CCPxA);
+    CCP_EnableRun(CCP0);
+}
 
+/**
+  * @brief  Set cooling pad power via PWM duty cycle
+  * @param  duty: 0~100 (0%~100%)
+  */
+void Cooling_SetPower(uint8_t duty)
+{
+    if (duty > 100) duty = 100;
+    CCP_ConfigDutyScale(CCP0, CCPxA, duty);
+}
 
-
-
-
-
+/**
+  * @brief  Turn off cooling pad
+  */
+void Cooling_Off(void)
+{
+    Cooling_SetPower(0);
+    CCP_Stop(CCP0);
+}
