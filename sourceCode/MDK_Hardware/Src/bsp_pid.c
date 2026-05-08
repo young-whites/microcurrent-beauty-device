@@ -5,8 +5,8 @@ PID_Controller g_cooling_pid;
 
 /*
  * NTC lookup table: 10K NTC (B=3950), 10K pull-up, 3.3V, 12-bit ADC
- * Index = temperature in Celsius (0~50)
- * ADC value increases as temperature rises (NTC resistance drops)
+ * Index = temperature in Celsius (0~125)
+ * ADC value DECREASES as temperature rises (NTC resistance drops)
  */
 const uint16_t NTC_Table[NTC_TABLE_SIZE] = {
   3699, 3604, 3513, 3424, 3337, 3253, 3172, 3092, 3015, 2940, /*  0~ 9C */
@@ -78,15 +78,14 @@ int16_t NTC_ADC_ToTemp(uint32_t adc_val)
         return NTC_TABLE_START_C * 10;
     }
 
-    /* Search for the interval containing adc_val */
-    for (temp_c = 0; temp_c < NTC_TABLE_SIZE - 1; temp_c++)
+    /* Search backwards: table is in descending order (high ADC = low temp) */
+    for (temp_c = NTC_TABLE_SIZE - 2; temp_c >= 0; temp_c--)
     {
-        if (adc >= NTC_Table[temp_c] && adc < NTC_Table[temp_c + 1])
+        if (adc <= NTC_Table[temp_c] && adc > NTC_Table[temp_c + 1])
         {
-            /* Linear interpolation: temp = base + (adc - table[base]) / (table[base+1] - table[base]) */
-            int16_t adc_diff = NTC_Table[temp_c + 1] - NTC_Table[temp_c];
-            int16_t adc_offs = adc - NTC_Table[temp_c];
-            /* Return in 0.1C: temp_c * 10 + fractional * 10 */
+            /* Linear interpolation between temp_c and temp_c+1 */
+            int16_t adc_diff = NTC_Table[temp_c] - NTC_Table[temp_c + 1];
+            int16_t adc_offs = NTC_Table[temp_c] - adc;
             return (NTC_TABLE_START_C + temp_c) * 10 + (adc_offs * 10) / adc_diff;
         }
     }
