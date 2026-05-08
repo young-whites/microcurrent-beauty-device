@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\DR-05.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\DR-05.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri May 08 16:31:55 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri May 08 16:40:26 2026
 <BR><P>
 <H3>Maximum Stack Usage =        144 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -227,6 +227,7 @@ Global Symbols
 <P><STRONG><a name="[6a]"></a>__aeabi_uidivmod</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, aeabi_sdiv.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Debug_UART_SendValue
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_SetPower
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
 <LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_ConfigRunMode
 </UL>
@@ -561,6 +562,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = CCP_ConfigCompare
 </UL>
 <BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_SetPower
 </UL>
 
 <P><STRONG><a name="[68]"></a>CCP_ConfigDutyScale</STRONG> (Thumb, 46 bytes, Stack size 32 bytes, psfr_ccp.o(i.CCP_ConfigDutyScale))
@@ -570,8 +572,7 @@ Global Symbols
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigCompare
 <LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
 </UL>
-<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_SetPower
-<LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_Init
+<BR>[Called By]<UL><LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_Init
 </UL>
 
 <P><STRONG><a name="[70]"></a>CCP_DisableReverseOutput</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_DisableReverseOutput))
@@ -591,6 +592,7 @@ Global Symbols
 </UL>
 <P><STRONG><a name="[69]"></a>CCP_ReadLoad</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_ReadLoad))
 <BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_SetPower
 </UL>
 
 <P><STRONG><a name="[73]"></a>CCP_Stop</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, psfr_ccp.o(i.CCP_Stop))
@@ -617,7 +619,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[49]"></a>Cooling_Off</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, bsp_hard.o(i.Cooling_Off))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = Cooling_Off &rArr; Cooling_SetPower &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = Cooling_Off &rArr; Cooling_SetPower &rArr; CCP_ConfigCompare
 </UL>
 <BR>[Calls]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_Stop
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_SetPower
@@ -627,10 +629,12 @@ Global Symbols
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_DecodeCmd
 </UL>
 
-<P><STRONG><a name="[72]"></a>Cooling_SetPower</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, bsp_hard.o(i.Cooling_SetPower))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = Cooling_SetPower &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
+<P><STRONG><a name="[72]"></a>Cooling_SetPower</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, bsp_hard.o(i.Cooling_SetPower))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = Cooling_SetPower &rArr; CCP_ConfigCompare
 </UL>
-<BR>[Calls]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigDutyScale
+<BR>[Calls]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ReadLoad
+<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CCP_ConfigCompare
+<LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
 </UL>
 <BR>[Called By]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timing1_100ms
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Cooling_Off
@@ -1115,7 +1119,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[ae]"></a>SystemWorkStatusCheck</STRONG> (Thumb, 368 bytes, Stack size 8 bytes, sys.o(i.SystemWorkStatusCheck))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = SystemWorkStatusCheck &rArr; Cooling_Off &rArr; Cooling_SetPower &rArr; CCP_ConfigDutyScale &rArr; CCP_ConfigCompare
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = SystemWorkStatusCheck &rArr; LED_On &rArr; LED_Out &rArr; __ARM_common_switch8
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_On
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Off
