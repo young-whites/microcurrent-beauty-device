@@ -81,7 +81,7 @@ int16_t NTC_ADC_ToTemp(uint32_t adc_val)
     /* Search backwards: table is in descending order (high ADC = low temp) */
     for (temp_c = NTC_TABLE_SIZE - 2; temp_c >= 0; temp_c--)
     {
-        if (adc <= NTC_Table[temp_c] && adc > NTC_Table[temp_c + 1])
+        if (adc >= NTC_Table[temp_c + 1] && adc <= NTC_Table[temp_c])
         {
             /* Linear interpolation between temp_c and temp_c+1 */
             int16_t adc_diff = NTC_Table[temp_c] - NTC_Table[temp_c + 1];
