@@ -111,7 +111,7 @@ void Timing1_500ms(void)
     Debug_UART_SendValue((int32_t)g_cooling_pid.enabled);
     Debug_UART_SendString(" ADC:");
     Debug_UART_SendValue((int32_t)ADC_Read(9));
-    Debug_UART_SendString("\r\n");
+    Debug_UART_SendByte(0x0D); Debug_UART_SendByte(0x0A);
 }
 
 /*****************************************************************************

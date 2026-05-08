@@ -1,7 +1,7 @@
 /**
  * @file    debug_uart.h
  * @brief   Debug UART0 driver for PID cooling temperature data output
- * @note    UART0 TX only (P44), 9600 8N1, blocking transmit
+ * @note    UART0 TX only (P44), 4800 8N1, blocking transmit
  */
 #ifndef __DEBUG_UART_H
 #define __DEBUG_UART_H
