@@ -11,6 +11,7 @@
 ".\objects\systemconfig.o"
 ".\objects\timer.o"
 ".\objects\usart.o"
+".\objects\debug_uart.o"
 ".\objects\system_cms32f033x.o"
 ".\objects\startup_cms32f033x.o"
 ".\objects\psfr_acmp.o"

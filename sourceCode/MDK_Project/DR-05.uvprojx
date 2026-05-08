@@ -450,6 +450,11 @@
               <FileType>1</FileType>
               <FilePath>..\MDK_System\Src\usart.c</FilePath>
             </File>
+            <File>
+              <FileName>debug_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MDK_System\Src\debug_uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
