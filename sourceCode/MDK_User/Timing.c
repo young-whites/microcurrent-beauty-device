@@ -2,6 +2,7 @@
 #include "bsp_pid.h"
 #include "debug_uart.h"
 #include "bsp_hard.h"
+#include "adc.h"
 
 
 
@@ -98,7 +99,19 @@ void Timing1_250ms(void)
 
 void Timing1_500ms(void)
 {
-	Debug_UART_SendString("OK\r\n");
+    /* Print PID temperature data for debug */
+    /* Format: Cur:250 Tar:100 Out:35 En:1 ADC:1500 */
+    Debug_UART_SendString("Cur:");
+    Debug_UART_SendValue((int32_t)g_cooling_pid.current_temp);
+    Debug_UART_SendString(" Tar:");
+    Debug_UART_SendValue((int32_t)g_cooling_pid.target_temp);
+    Debug_UART_SendString(" Out:");
+    Debug_UART_SendValue((int32_t)PID_GetOutput());
+    Debug_UART_SendString(" En:");
+    Debug_UART_SendValue((int32_t)g_cooling_pid.enabled);
+    Debug_UART_SendString(" ADC:");
+    Debug_UART_SendValue((int32_t)ADC_Read(9));
+    Debug_UART_SendString("\r\n");
 }
 
 /*****************************************************************************

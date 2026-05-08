@@ -94,16 +94,16 @@ void PID_Update(void)
     int32_t p_term, i_term, d_term;
     int32_t output_raw;
 
+    /* Always read temperature (for debug display even when PID is off) */
+    uint32_t adc_val = ADC_Read(NTC_ADC_CHANNEL);
+    g_cooling_pid.current_temp = NTC_ADC_ToTemp(adc_val);
+
     if (!g_cooling_pid.enabled)
     {
         g_cooling_pid.output = 0;
         g_cooling_pid.integral = 0;
         return;
     }
-
-    /* Read current temperature from NTC ADC */
-    uint32_t adc_val = ADC_Read(NTC_ADC_CHANNEL);
-    g_cooling_pid.current_temp = NTC_ADC_ToTemp(adc_val);
 
     /* Calculate error: positive = need more cooling */
     error = g_cooling_pid.current_temp - g_cooling_pid.target_temp;
