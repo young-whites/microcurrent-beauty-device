@@ -34,7 +34,7 @@ INT16U CrcCalc_Crc16Modbus(INT8U *dat,INT8U len)
 void APP_SendFrame(AppFrameDef *Frame)
 {
 	INT16U	crc;
-	crc = CrcCalc_Crc16Modbus((INT8U *)Frame, Frame->pack.len+1);
+	crc = CrcCalc_Crc16Modbus((INT8U *)Frame, Frame->pack.len);
 
 	if(Frame->pack.sFlag & FALG_UART1){
 		UART1_SendByte(FRAME_HEAD1);
@@ -58,7 +58,7 @@ void APP_Report(INT8U func, INT8U len, INT8U para[])
 {
 	INT8U	i;
 	
-	ReptFrame.list.len   = len + 5;
+	ReptFrame.list.len   = len + 7;
 	ReptFrame.list.idH   = DEVICE_ID_H;
 	ReptFrame.list.idL   = DEVICE_ID_L;
 	ReptFrame.list.type  = FRAME_TYPE_POST;
@@ -200,7 +200,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case	FRAME_FUNC_VERSION:
 				{
 					vaildCmd = 1;
-					Frame->list.len+=2;
+					Frame->list.len = 2 + 7;
 					Frame->list.para[0] = MAJ_VERSION;
 					Frame->list.para[1] = SUB_VERSION;
 				}break;
@@ -208,7 +208,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			case 0x41:
 				{
 					vaildCmd = 1;
-					Frame->list.len += 2;
+					Frame->list.len = 2 + 7;
 					Frame->list.para[0] = (INT8U)(g_cooling_pid.current_temp >> 8);
 					Frame->list.para[1] = (INT8U)(g_cooling_pid.current_temp & 0xFF);
 				}break;
@@ -291,7 +291,7 @@ void APP_DecodeFrame(INT8U dat, INT8U sFlag, AppDecodeDef *decod)
 		break;
 	case 5:											// 校验码
 		decod->crc += dat;
-		crcCalc = CrcCalc_Crc16Modbus((INT8U *)&decod->Frame, decod->Frame.pack.len+1);
+		crcCalc = CrcCalc_Crc16Modbus((INT8U *)&decod->Frame, decod->Frame.pack.len);
 		#if 1
 		if(decod->crc == crcCalc)	{				// 校验成功，则继续解码
 			APP_DecodeCmd(&decod->Frame);
