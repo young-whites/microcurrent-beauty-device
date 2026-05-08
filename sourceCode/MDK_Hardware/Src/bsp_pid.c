@@ -5,16 +5,23 @@ PID_Controller g_cooling_pid;
 
 /*
  * NTC lookup table: 10K NTC (B=3950), 10K pull-up, 3.3V, 12-bit ADC
- * Index = temperature in Celsius (0~50)
- * ADC value increases as temperature rises (NTC resistance drops)
+ * Index = temperature in Celsius (0~125)
+ * ADC value DECREASES as temperature rises
  */
 const uint16_t NTC_Table[NTC_TABLE_SIZE] = {
-  939, 977, 1017, 1057, 1098, 1140, 1182, 1225, 1269, 1313, /*  0~ 9C */
-  1357, 1402, 1447, 1493, 1539, 1585, 1631, 1678, 1724, 1771, /* 10~19C */
-  1817, 1864, 1910, 1956, 2002, 2048, 2093, 2138, 2182, 2227, /* 20~29C */
-  2270, 2314, 2356, 2398, 2440, 2481, 2521, 2561, 2600, 2639, /* 30~39C */
-  2676, 2713, 2749, 2785, 2820, 2854, 2887, 2920, 2952, 2983, /* 40~49C */
-  3014                                                         /* 50C */
+  3699, 3604, 3513, 3424, 3337, 3253, 3172, 3092, 3015, 2940, /*  0~ 9C */
+  2721, 2677, 2633, 2589, 2544, 2499, 2454, 2409, 2363, 2318, /* 10~19C */
+  2272, 2227, 2182, 2136, 2091, 2048, 2002, 1957, 1913, 1870, /* 20~29C */
+  1826, 1783, 1741, 1699, 1658, 1617, 1577, 1537, 1498, 1460, /* 30~39C */
+  1422, 1385, 1348, 1313, 1277, 1243, 1209, 1176, 1144, 1112, /* 40~49C */
+  1082, 1051, 1022,  993,  965,  937,  911,  884,  859,  834, /* 50~59C */
+   810,  787,  764,  742,  720,  699,  679,  659,  639,  621, /* 60~69C */
+   603,  585,  568,  551,  535,  519,  504,  490,  475,  462, /* 70~79C */
+   448,  435,  422,  410,  399,  387,  376,  365,  355,  345, /* 80~89C */
+   335,  325,  316,  307,  299,  290,  282,  274,  267,  259, /* 90~99C */
+   253,  245,  239,  232,  226,  220,  214,  208,  202,  197, /* 100~109C */
+   192,  187,  182,  177,  172,  168,  163,  159,  155,  151, /* 110~119C */
+   147,  143,  139,  135,  132,  129                          /* 120~125C */
 };
 
 
@@ -71,14 +78,13 @@ int16_t NTC_ADC_ToTemp(uint32_t adc_val)
         return NTC_TABLE_START_C * 10;
     }
 
-    /* Search forward: table is in ascending order (high ADC = high temp) */
+    /* Forward search: descending table, ADC decreases as temp rises */
     for (temp_c = 0; temp_c < NTC_TABLE_SIZE - 1; temp_c++)
     {
-        if (adc >= NTC_Table[temp_c] && adc < NTC_Table[temp_c + 1])
+        if (adc <= NTC_Table[temp_c] && adc > NTC_Table[temp_c + 1])
         {
-            /* Linear interpolation between temp_c and temp_c+1 */
-            int16_t adc_diff = NTC_Table[temp_c + 1] - NTC_Table[temp_c];
-            int16_t adc_offs = adc - NTC_Table[temp_c];
+            int16_t adc_diff = NTC_Table[temp_c] - NTC_Table[temp_c + 1];
+            int16_t adc_offs = NTC_Table[temp_c] - adc;
             return (NTC_TABLE_START_C + temp_c) * 10 + (adc_offs * 10) / adc_diff;
         }
     }

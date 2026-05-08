@@ -17,7 +17,7 @@
 
 /* NTC parameters */
 #define NTC_ADC_CHANNEL         9       // ADC1_CH9
-#define NTC_TABLE_SIZE          51      // 0~50C
+#define NTC_TABLE_SIZE          126     // 0~125C
 #define NTC_TABLE_START_C       0       // Table starts at 0C
 
 /*
@@ -27,7 +27,7 @@
  * R_ntc = 10000 * exp(3950 * (1/(T+273.15) - 1/298.15))
  * ADC = 4095 * 10000 / (R_ntc + 10000)
  */
-extern const uint16_t NTC_Table[NTC_TABLE_SIZE];  // 51 entries, 0~50C
+extern const uint16_t NTC_Table[NTC_TABLE_SIZE];  // 126 entries, 0~125C
 
 typedef struct {
     int16_t target_temp;        // Target temperature (0.1C)
