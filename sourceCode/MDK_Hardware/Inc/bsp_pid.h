@@ -8,9 +8,9 @@
 #define COOLING_TEMP_DEFAULT    100     // 10.0C default target
 
 /* PID parameters (fixed-point, scaled by 100) */
-#define PID_KP                  50      // Proportional gain
-#define PID_KI                  10      // Integral gain
-#define PID_KD                  20      // Derivative gain
+#define PID_KP                  200      // Proportional gain
+#define PID_KI                  50      // Integral gain
+#define PID_KD                  30      // Derivative gain
 #define PID_INTEGRAL_MAX        5000    // Anti-windup limit
 #define PID_OUTPUT_MIN          0       // Minimum PWM duty (0%)
 #define PID_OUTPUT_MAX          100     // Maximum PWM duty (100%)
