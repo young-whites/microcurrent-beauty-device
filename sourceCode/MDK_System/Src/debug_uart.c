@@ -27,6 +27,9 @@ void Debug_UART_Init(void)
 
     /* Configure UART0: 9600 baud, 8-bit, no parity, 1 stop bit */
     UART_ConfigRunMode(UART0, 9600, UART_WLS_8, UART_PARITY_NONE, UART_STOP_BIT_1);
+
+    /* Enable UART0 FIFO (reset TX/RX FIFO) */
+    UART0->FCR = UART_FCR_FIFOEN_Msk | UART_FCR_TXFIFORST_Msk | UART_FCR_RXFIFORST_Msk;
 }
 
 /**
