@@ -112,9 +112,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				if (Flag.WorkStart == 1)
 				{
-					/* Enable cooling: init PID, start cooling subsystem */
-					PID_Init();
-					Cooling_Init();
+					/* Enable cooling PID (already initialized in main) */
 					PID_SetEnabled(1);
 				}
 				else
