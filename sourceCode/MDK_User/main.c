@@ -3,6 +3,7 @@
 #include "bsp_pid.h"
 #include "bsp_hard.h"
 #include "adc.h"
+#include "debug_uart.h"
 
 
 
@@ -49,6 +50,8 @@ int main(void)
 	Cooling_Init();
 	/**********************以上配置为系统芯片与相关外设的初始化相关***************************************/
 	/* 系统参数初始化 */
+	/* Debug UART0 init for temperature data output */
+	Debug_UART_Init();
 	SystemParaInit();
 
 

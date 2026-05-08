@@ -1,5 +1,6 @@
 #include "Timing.h"
 #include "bsp_pid.h"
+#include "debug_uart.h"
 #include "bsp_hard.h"
 
 
@@ -97,8 +98,7 @@ void Timing1_250ms(void)
 
 void Timing1_500ms(void)
 {
-
-
+	Debug_UART_SendString("OK\r\n");
 }
 
 /*****************************************************************************
