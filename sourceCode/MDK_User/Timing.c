@@ -75,7 +75,7 @@ void Timing1_100ms(void)
     if (Flag.WorkStart && g_cooling_pid.enabled)
     {
         PID_Update();
-        Cooling_SetPower(PID_GetOutput());
+        Cooling_SetPower(100 - PID_GetOutput());
     }
 }
 

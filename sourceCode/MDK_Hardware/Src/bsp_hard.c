@@ -61,7 +61,7 @@ void Cooling_Init(void)
     SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
     CCP_ConfigCLK(CCP0, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);  // Pclk=3MHz/3000=1kHz
     CCP_EnablePWMMode(CCP0);
-    CCP_ConfigDutyScale(CCP0, CCPxA, 0);   // Start at 0%
+    CCP_ConfigDutyScale(CCP0, CCPxA, 100); // Start at 100% (OFF in inverted logic)
     CCP_DisableReverseOutput(CCP0, CCPxA);
     CCP_EnableRun(CCP0);
 }
@@ -81,6 +81,6 @@ void Cooling_SetPower(uint8_t duty)
   */
 void Cooling_Off(void)
 {
-    Cooling_SetPower(0);
+    Cooling_SetPower(100); // OFF in inverted logic
     CCP_Stop(CCP0);
 }
