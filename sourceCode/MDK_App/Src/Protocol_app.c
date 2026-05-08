@@ -122,6 +122,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				else
 				{
 					/* Disable cooling + fan */
+					CCP_Stop(CCP0);
 					PID_SetEnabled(0);
 					Cooling_Off();
 					HeatDissipation_Off();
