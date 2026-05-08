@@ -39,7 +39,8 @@ void APP_SendFrame(AppFrameDef *Frame)
 	if(Frame->pack.sFlag & FALG_UART1){
 		UART1_SendByte(FRAME_HEAD1);
 		UART1_SendByte(FRAME_HEAD2);
-		UART1_SendBytes(Frame->pack.len+1, (INT8U *)Frame);
+		UART1_SendByte(Frame->pack.len);
+		UART1_SendBytes(Frame->pack.len, (INT8U *)&Frame->pack.dat[0]);
 		UART1_SendByte(crc>>8);
 		UART1_SendByte(crc);
 	}
@@ -185,8 +186,8 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 						break;
 			}
 
-		}		
-	
+		}
+		break;
 
 		/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 		/*                                                                           接受到读取数据指令 0x33                                                                                  */
