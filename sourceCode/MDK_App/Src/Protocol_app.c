@@ -113,7 +113,9 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				if (Flag.WorkStart == 1)
 				{
-					/* Enable cooling PID + fan */
+					/* Enable cooling: start CCP0 PWM + PID + fan */
+					CCP_Start(CCP0);
+					CCP_EnableRun(CCP0);
 					PID_SetEnabled(1);
 					HeatDissipation_On();
 				}
