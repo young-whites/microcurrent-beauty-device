@@ -175,14 +175,9 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case SET_COOLING_LEVEL:
 				{
 					vaildCmd = 1;
-					/* para[0]: cooling level 1~5 maps to temperature range */
-					/* Level 1 = 20C, Level 2 = 17C, Level 3 = 13C, Level 4 = 8C, Level 5 = 5C */
-					static const int16_t level_to_temp[] = {200, 170, 130, 80, 50};
-					uint8_t level = Frame->list.para[0];
-					if (level >= 1 && level <= 5)
-					{
-						PID_SetTarget(level_to_temp[level - 1]);
-					}
+					/* para[0]: target temperature in degrees (5~20) */
+					uint8_t temp_deg = Frame->list.para[0];
+					PID_SetTarget((int16_t)temp_deg * 10); /* Convert to 0.1C units */
 				}break;
 
 	

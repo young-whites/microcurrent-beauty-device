@@ -66,16 +66,14 @@ int16_t NTC_ADC_ToTemp(uint32_t adc_val)
     uint16_t adc = (uint16_t)adc_val;
     int16_t temp_c;
 
-    /* Clamp: above table maximum */
-    if (adc >= NTC_Table[NTC_TABLE_SIZE - 1])
+    /* Clamp: descending table - high ADC = cold, low ADC = hot */
+    if (adc >= NTC_Table[0])
     {
-        return (NTC_TABLE_START_C + NTC_TABLE_SIZE - 1) * 10;
+        return NTC_TABLE_START_C * 10;           /* Colder than 0C */
     }
-
-    /* Clamp: below table minimum */
-    if (adc <= NTC_Table[0])
+    if (adc <= NTC_Table[NTC_TABLE_SIZE - 1])
     {
-        return NTC_TABLE_START_C * 10;
+        return (NTC_TABLE_START_C + NTC_TABLE_SIZE - 1) * 10; /* Hotter than 125C */
     }
 
     /* Forward search: descending table, ADC decreases as temp rises */
