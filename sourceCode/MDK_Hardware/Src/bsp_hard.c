@@ -63,7 +63,8 @@ void Cooling_Init(void)
     CCP_EnablePWMMode(CCP0);
     CCP_ConfigDutyScale(CCP0, CCPxA, 0);   // Start at 0%
     CCP_DisableReverseOutput(CCP0, CCPxA);
-    CCP_EnableRun(CCP0);
+    CCP_Start(CCP0);       /* Enable CCP0 module */
+    CCP_EnableRun(CCP0);   /* Start timer counting */
 }
 
 /**
