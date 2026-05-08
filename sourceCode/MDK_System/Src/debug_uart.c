@@ -1,7 +1,7 @@
 /**
  * @file    debug_uart.c
  * @brief   Debug UART0 driver for PID cooling temperature data output
- * @note    UART0 TX only on P44, 115200 8N1, blocking transmit (no FIFO/interrupt)
+ * @note    UART0 TX only on P44, 9600 8N1, blocking transmit (no FIFO/interrupt)
  */
 #include "debug_uart.h"
 #include "cms32f033x.h"
@@ -12,7 +12,7 @@
 
 /**
  * @brief   Initialize UART0 for debug output
- * @note    Configures P44 as TXD0, enables UART0 clock, sets 115200 8N1
+ * @note    Configures P44 as TXD0, enables UART0 clock, sets 9600 8N1
  */
 void Debug_UART_Init(void)
 {
@@ -25,8 +25,8 @@ void Debug_UART_Init(void)
     SYS_DisableGPIO4Protect();
     GPIO_CONFIG_IO_MODE(GPIO4, GPIO_PIN_4, GPIO_MODE_OUTPUT_PUSH_PULL);
 
-    /* Configure UART0: 115200 baud, 8-bit, no parity, 1 stop bit */
-    UART_ConfigRunMode(UART0, 115200, UART_WLS_8, UART_PARITY_NONE, UART_STOP_BIT_1);
+    /* Configure UART0: 9600 baud, 8-bit, no parity, 1 stop bit */
+    UART_ConfigRunMode(UART0, 9600, UART_WLS_8, UART_PARITY_NONE, UART_STOP_BIT_1);
 }
 
 /**
