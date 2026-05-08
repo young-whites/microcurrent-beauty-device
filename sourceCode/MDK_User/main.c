@@ -48,7 +48,7 @@ int main(void)
 	/* Cooling subsystem initialized on-demand by PID control */
 	/* Initialize cooling PWM subsystem (CCP0) */
 	Cooling_Init();
-	/**********************以上配置为系统芯片与相关外设的初始化相关***************************************/
+	/**********************以上配置为系统芯片与相关外设的初始化相关*+.0**************************************/
 	/* 系统参数初始化 */
 	/* Debug UART0 init for temperature data output */
 	Debug_UART_Init();
@@ -82,7 +82,7 @@ int main(void)
 			/* Stop cooling on bluetooth disconnect */
 			PID_SetEnabled(0);
 			Cooling_Off();
-		}		
+		}
 	}
 }
 
