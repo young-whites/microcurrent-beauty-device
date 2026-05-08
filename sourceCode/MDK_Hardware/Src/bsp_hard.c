@@ -72,8 +72,11 @@ void Cooling_Init(void)
   */
 void Cooling_SetPower(uint8_t duty)
 {
+    uint16_t period, compare;
     if (duty > 100) duty = 100;
-    CCP_ConfigDutyScale(CCP0, CCPxA, duty);
+    period = CCP_ReadLoad(CCP0);
+    compare = (uint32_t)period * duty / 100;
+    CCP_ConfigCompare(CCP0, CCPxA, compare);
 }
 
 /**
