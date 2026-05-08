@@ -113,14 +113,16 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				if (Flag.WorkStart == 1)
 				{
-					/* Enable cooling PID (already initialized in main) */
+					/* Enable cooling PID + fan */
 					PID_SetEnabled(1);
+					HeatDissipation_On();
 				}
 				else
 				{
-					/* Disable cooling */
+					/* Disable cooling + fan */
 					PID_SetEnabled(0);
 					Cooling_Off();
+					HeatDissipation_Off();
 				}
 			}
 			break;
