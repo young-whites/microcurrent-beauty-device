@@ -100,12 +100,18 @@ void Timing1_250ms(void)
 void Timing1_500ms(void)
 {
     /* Print PID temperature data for debug */
-    /* Format: Cur:250 Tar:100 Out:35 En:1 ADC:1500 */
+    /* Format: Cur:24.3C Tar:5.0C Out:100 En:1 ADC:2015 */
+    int16_t cur = g_cooling_pid.current_temp;
+    int16_t tar = g_cooling_pid.target_temp;
     Debug_UART_SendString("Cur:");
-    Debug_UART_SendValue((int32_t)g_cooling_pid.current_temp);
-    Debug_UART_SendString(" Tar:");
-    Debug_UART_SendValue((int32_t)g_cooling_pid.target_temp);
-    Debug_UART_SendString(" Out:");
+    Debug_UART_SendValue((int32_t)(cur / 10));
+    Debug_UART_SendByte('.');
+    Debug_UART_SendValue((int32_t)(cur % 10));
+    Debug_UART_SendString("C Tar:");
+    Debug_UART_SendValue((int32_t)(tar / 10));
+    Debug_UART_SendByte('.');
+    Debug_UART_SendValue((int32_t)(tar % 10));
+    Debug_UART_SendString("C Out:");
     Debug_UART_SendValue((int32_t)PID_GetOutput());
     Debug_UART_SendString(" En:");
     Debug_UART_SendValue((int32_t)g_cooling_pid.enabled);
