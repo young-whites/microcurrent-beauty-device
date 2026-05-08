@@ -21,7 +21,6 @@ void Timer0_Timing1_1ms(void)
 *****************************************************************************/
 void Timing1_1ms(void)
 {
-	Flag.WorkStart = 1;
 	LED_DrvScan();
 	BEEP_DrvScan();
 	APP_TimeOverScan();
