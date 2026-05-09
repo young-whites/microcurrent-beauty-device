@@ -3,7 +3,7 @@
 #include "sys.h"
 
 /* Cooling temperature range */
-#define COOLING_TEMP_MIN        50      // 5.0C (unit: 0.1C)
+#define COOLING_TEMP_MIN        0       // 0.0C (unit: 0.1C)
 #define COOLING_TEMP_MAX        200     // 20.0C (unit: 0.1C)
 #define COOLING_TEMP_DEFAULT    100     // 10.0C default target
 

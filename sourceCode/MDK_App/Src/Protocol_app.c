@@ -176,7 +176,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case SET_COOLING_LEVEL:
 				{
 					vaildCmd = 1;
-					/* para[0]: target temperature in degrees (5~20) */
+					/* para[0]: target temperature in degrees (0~20) */
 					uint8_t temp_deg = Frame->list.para[0];
 					PID_SetTarget((int16_t)temp_deg * 10); /* Convert to 0.1C units */
 				}break;
