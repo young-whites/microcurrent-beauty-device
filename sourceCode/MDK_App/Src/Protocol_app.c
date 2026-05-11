@@ -158,6 +158,47 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 			}break;
 
+			/*****************************************************************************************************/
+			/*能量输出启停 (func=0x03)*/
+			/*****************************************************************************************************/
+			case FRAME_FUNC_ENERGY_RUN:
+			{
+				vaildCmd = 1;
+				Flag.EnergyOutput = Frame->list.para[0];
+
+				if (Flag.EnergyOutput == 1)
+				{
+					/* Enable energy output: start CCP1 PWM */
+					CCP_Start(CCP1);
+					CCP_EnableRun(CCP1);
+				}
+				else
+				{
+					/* Disable energy output */
+					Energy_Off();
+				}
+			}
+			break;
+
+			/*****************************************************************************************************/
+			/*总停止 (func=0x06) - 同时停止能量输出和制冷*/
+			/*****************************************************************************************************/
+			case FRAME_FUNC_TOTAL_STOP:
+			{
+				vaildCmd = 1;
+
+				/* Stop energy output */
+				Flag.EnergyOutput = 0;
+				Energy_Off();
+
+				/* Stop cooling + fan */
+				Flag.WorkStart = 0;
+				CCP_Stop(CCP0);
+				PID_SetEnabled(0);
+				Cooling_Off();
+				HeatDissipation_Off();
+			}
+			break;
 
 				default:									
 					break;		
@@ -179,6 +220,13 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					/* para[0]: target temperature in degrees (0~20) */
 					uint8_t temp_deg = Frame->list.para[0];
 					PID_SetTarget((int16_t)temp_deg * 10); /* Convert to 0.1C units */
+				}break;
+
+				case FRAME_FUNC_ENERGY_SET:
+				{
+					vaildCmd = 1;
+					/* para[0]: energy value 0~100 (duty cycle %) */
+					Energy_SetPower(Frame->list.para[0]);
 				}break;
 
 	

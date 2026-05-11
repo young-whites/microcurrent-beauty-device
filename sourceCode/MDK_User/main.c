@@ -50,6 +50,8 @@ int main(void)
 	Cooling_Init();
 	/* Heat dissipation fan GPIO init (P25) */
 	HeatDissipation_GPIO_Config();
+	/* Energy output PWM init (P07 as CCP1B for microcurrent) */
+	Energy_Init();
 	/**********************以上配置为系统芯片与相关外设的初始化相关*+.0**************************************/
 	/* 系统参数初始化 */
 	/* Debug UART0 init for temperature data output */
@@ -85,6 +87,9 @@ int main(void)
 			PID_SetEnabled(0);
 			Cooling_Off();
 			HeatDissipation_Off();
+			/* Stop energy output on bluetooth disconnect */
+			Flag.EnergyOutput = 0;
+			Energy_Off();
 		}
 	}
 }

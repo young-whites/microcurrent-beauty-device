@@ -18,6 +18,9 @@
 #define		FRAME_STATE_ERR				(0x00)		// 帧状态:校验出错
 //------------------------------------------------------------------------
 #define		FRAME_FUNC_RUN				(0x01)		// 功能码:运行（启动/停机）
+#define		FRAME_FUNC_ENERGY_SET		(0x02)		// 功能码:微电流能量输出设置
+#define		FRAME_FUNC_ENERGY_RUN		(0x03)		// 功能码:微电流能量输出启停
+#define		FRAME_FUNC_TOTAL_STOP		(0x06)		// 功能码:总停止（能量+制冷）
 #define		SET_OLD_MODE				(0x05)		// 功能码：进入老化模式
 #define		FRAME_FUNC_UPGRADE			(0xAA)		// 功能吗：远程升级
 

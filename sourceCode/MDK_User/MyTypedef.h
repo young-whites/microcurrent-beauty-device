@@ -31,6 +31,7 @@ typedef struct
     uint8_t     cntFlagA;        // 与门A半桥
     uint8_t     cntFlagB;        // 与门B半桥
 	uint8_t		BluetoothConnect;// 蓝牙连接状态
+	uint8_t		EnergyOutput;   // 微电流能量输出使能标志
 }  Flag_StructType;
 extern   Flag_StructType Flag;
 

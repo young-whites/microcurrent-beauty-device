@@ -15,4 +15,9 @@ void Cooling_Init(void);
 void Cooling_SetPower(uint8_t duty);
 void Cooling_Off(void);
 
+/* Energy output control (P07 as CCP1B for microcurrent PWM) */
+void Energy_Init(void);
+void Energy_SetPower(uint8_t duty);
+void Energy_Off(void);
+
 #endif /* __BSP_HARD_H */
