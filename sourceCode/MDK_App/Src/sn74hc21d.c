@@ -15,7 +15,6 @@
 /* =========================================================================
  * Constants
  * ========================================================================= */
-#define 
 #define EPWM_CARRIER_FREQ   1645    /* Match reference Water_PwmFreq */
 #define TMR0_RELOAD         1500    /* ~0.5ms per step at Pclk=3MHz */
 
