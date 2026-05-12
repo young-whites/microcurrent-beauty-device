@@ -106,6 +106,19 @@ void SN74HC21D_Init(void)
         EPWM_DisableOutput(ION_EPWM_COMBINED_MSK);
     }
 
+    /* ---- Configure P30 (CCP0A) as voltage control PWM ----
+     * P30 controls the supply voltage to the half-bridge transformer.
+     * Duty cycle 0~100% maps to output voltage 0~100%.
+     * Frequency: Pclk=3MHz / 3000 = 1kHz
+     */
+    SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
+    SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
+    CCP_ConfigCLK(CCP0, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);
+    CCP_EnablePWMMode(CCP0);
+    CCP_ConfigDutyScale(CCP0, CCPxA, 0);   /* Start at 0% */
+    CCP_DisableReverseOutput(CCP0, CCPxA);
+    CCP_Start(CCP0);
+
     /* Ensure everything is in safe state */
     SN74HC21D_DisableAll();
 }
@@ -292,6 +305,10 @@ void SN74HC21D_SineWaveDisable(void)
     g_sine_running = 0;
     TMR_Stop(TMR0);
     TMR_DisableOverflowInt(TMR0);
+
+    /* Turn off P30 voltage control */
+    CCP_ConfigCompare(CCP0, CCPxA, 0);
+
     SN74HC21D_StopAll();
 }
 
@@ -302,6 +319,13 @@ void SN74HC21D_SineWaveDisable(void)
  *****************************************************************************/
 void SN74HC21D_SetAmplitude(uint8_t percent)
 {
+    uint32_t period, compare;
+
     if (percent > 100) percent = 100;
     g_amplitude_scale = percent;
+
+    /* Set P30 (CCP0A) duty cycle to control supply voltage */
+    period = CCP_ReadLoad(CCP0);
+    compare = (uint32_t)period * percent / 100;
+    CCP_ConfigCompare(CCP0, CCPxA, (uint16_t)compare);
 }
