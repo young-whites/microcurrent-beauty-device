@@ -38,9 +38,10 @@
  *   reload = 3000000 / (500 * 2000) = 3
  * With RAMP_SPEED=1000 half-waves/s (1s per full wave at 100Hz carrier):
  *   reload = 3000000 / (500 * 1000) = 6
- * Default: 250ms per half-wave -> RAMP_SPEED=2000 -> reload = 3
+ * Target: ~1ms per step -> 250 steps * 1ms = 250ms per half-wave
+ * Timer reload = Pclk * 0.001 = 3000
  */
-#define TMR0_DEFAULT_RELOAD 3
+#define TMR0_DEFAULT_RELOAD 3000
 
 /* Base EPWM frequency (Hz) */
 #define EPWM_BASE_FREQ      100
