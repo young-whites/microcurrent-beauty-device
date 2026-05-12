@@ -116,7 +116,7 @@ void TMR0_IRQHandler(void)
 	if (TMR_GetOverflowIntFlag(TMR0))
 	{
 		TMR_ClearOverflowIntFlag(TMR0);
-		SN74HC21D_SineWaveISR();
+		SN74HC21D_AmpRampISR();
 	}
 }
 

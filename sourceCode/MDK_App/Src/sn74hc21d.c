@@ -1,331 +1,406 @@
 /**
  * @file    sn74hc21d.c
- * @brief   SN74HC21D driver: half-bridge control + sine wave generation
+ * @brief   SN74HC21D half-bridge driver for microcurrent energy output
  *
- * Sine wave is approximated by modulating EPWM duty cycle across segments.
- * Upper half-bank (ION+) handles positive half-cycle.
- * Lower half-bank (ION-) handles negative half-cycle.
- * Dead-time is enforced at every transition to prevent shoot-through.
+ * Architecture:
+ *   - P07(CCP1B): PWM at 1kHz, duty controls supply voltage to half-bridge
+ *                 -> This is how energy amplitude is controlled
+ *   - P00(EPWM2): Upper half-bridge signal (100Hz square wave)
+ *   - P06(EPWM3): Lower half-bridge signal (100Hz square wave)
+ *   - P31(EPWM4): Duty modulation signal (2x base frequency)
+ *   - P12(GPIO):  ION_ENA - upper half-bridge enable
+ *   - P40(GPIO):  ION_ENB - lower half-bridge enable
+ *   - P10(GPIO):  ION_ENAB - master enable
+ *
+ * Waveform generation:
+ *   TMR0 ISR drives amplitude ramp (0->peak->0) on each half-wave.
+ *   Half-bridge alternates (A/B) after each ramp completes.
+ *   Energy intensity = P07(CCP1B) duty cycle, ramped via lookup table.
+ *
+ * @note    P30(CCP0A) cooling pad is NOT modified here.
+ * @note    EPWM_Config_Independent_Mode library function is NOT modified.
  */
 
 #include "sn74hc21d.h"
 #include "epwm.h"
+#include "bsp_hard.h"
 
-/* ---- Internal state ---- */
-static volatile uint8_t  g_sine_running    = 0;
-static volatile uint8_t  g_sine_step       = 0;
-static volatile uint8_t  g_amplitude_scale = 100;  /* Amplitude scale 0~100% */
+/* =========================================================================
+ * Internal constants
+ * ========================================================================= */
 
-/* Pre-computed sine duty table (16 steps, normalized to 0~100)
- * Values = |sin(step * 2*PI / 16)| * 100
- * step: 0..7 = positive half (upper bridge), 8..15 = negative half (lower bridge) */
-static const uint8_t g_sine_duty[SINE_STEPS] = {
-     0,  38,  71,  92, 100,  92,  71,  38,   /* positive half-cycle */
-     0,  38,  71,  92, 100,  92,  71,  38    /* negative half-cycle */
+/* Amplitude ramp lookup table size */
+#define AMP_RAMP_SIZE       250
+
+/* Default timer reload for amplitude ramp stepping.
+ * Pclk = 3MHz, TMR0 reload = Pclk / (RAMP_STEPS * RAMP_SPEED_HZ)
+ * With RAMP_STEPS=500 (250 up + 250 down), RAMP_SPEED=2000 half-waves/s:
+ *   reload = 3000000 / (500 * 2000) = 3
+ * With RAMP_SPEED=1000 half-waves/s (1s per full wave at 100Hz carrier):
+ *   reload = 3000000 / (500 * 1000) = 6
+ * Default: 250ms per half-wave -> RAMP_SPEED=2000 -> reload = 3
+ */
+#define TMR0_DEFAULT_RELOAD 3
+
+/* Base EPWM frequency (Hz) */
+#define EPWM_BASE_FREQ      100
+
+/* EPWM period values for 100Hz (Pclk=3MHz, center-aligned: period = Pclk/Freq/2) */
+#define EPWM_PERIOD_100HZ   (SystemAPBClock / EPWM_BASE_FREQ / 2)  /* 15000 at 3MHz */
+
+/* EPWM4 period = double frequency (200Hz) */
+#define EPWM4_PERIOD        (EPWM_PERIOD_100HZ / 2)                /* 7500 */
+
+/* =========================================================================
+ * Amplitude ramp lookup table
+ * Linear ramp: 0, 1, 2, ..., 249
+ * Index maps directly to duty cycle numerator (duty = period * index / 250)
+ * ========================================================================= */
+static const uint16_t g_amp_ramp_table[AMP_RAMP_SIZE] = {
+      0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,
+     11,  12,  13,  14,  15,  16,  17,  18,  19,  20,
+     21,  22,  23,  24,  25,  26,  27,  28,  29,  30,
+     31,  32,  33,  34,  35,  36,  37,  38,  39,  40,
+     41,  42,  43,  44,  45,  46,  47,  48,  49,  50,
+     51,  52,  53,  54,  55,  56,  57,  58,  59,  60,
+     61,  62,  63,  64,  65,  66,  67,  68,  69,  70,
+     71,  72,  73,  74,  75,  76,  77,  78,  79,  80,
+     81,  82,  83,  84,  85,  86,  87,  88,  89,  90,
+     91,  92,  93,  94,  95,  96,  97,  98,  99,
+    100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+    110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+    120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+    130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+    140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
+    150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+    160, 161, 162, 163, 164, 165, 166, 167, 168, 169,
+    170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
+    180, 181, 182, 183, 184, 185, 186, 187, 188, 189,
+    190, 191, 192, 193, 194, 195, 196, 197, 198, 199,
+    200, 201, 202, 203, 204, 205, 206, 207, 208, 209,
+    210, 211, 212, 213, 214, 215, 216, 217, 218, 219,
+    220, 221, 222, 223, 224, 225, 226, 227, 228, 229,
+    230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+    240, 241, 242, 243, 244, 245, 246, 247, 248, 249
 };
 
-/*****************************************************************************
- * @brief  Dead-time insertion (blocking delay)
- * @note   Simple busy-wait; replace with timer-based delay if available.
- *         At Pclk=3MHz, 150 iterations ~ 50us
- *****************************************************************************/
-void SN74HC21D_DeadTime(void)
+/* =========================================================================
+ * Module state
+ * ========================================================================= */
+static volatile uint8_t  g_energy_running   = 0;    /* Energy output active flag */
+static volatile uint8_t  g_halfwave_flag_a  = 1;    /* 1=channel A active, 0=channel B */
+static volatile uint16_t g_ramp_index_up    = 0;    /* Rising ramp counter */
+static volatile uint16_t g_ramp_index_down  = 0;    /* Falling ramp counter */
+static volatile uint16_t g_ramp_peak       = 0;    /* Target peak index (gear+base) */
+static volatile uint8_t  g_energy_gear      = 0;    /* Current gear setting 0~100 */
+
+/* =========================================================================
+ * Internal helpers
+ * ========================================================================= */
+
+/**
+ * @brief  Select upper half-bridge (Channel A) for positive half-wave
+ *         ENA=1, ENB=0, ENAB=1, EPWM2 on, EPWM3 off
+ */
+static void SN74HC21D_SelectChannelA(void)
 {
-    volatile uint32_t i;
-    for (i = 0; i < 150; i++) { __NOP(); }
+    GPIO_SetPin(GPIO1, GPIO_PIN_2_MSK);       /* ION_ENA  = 1 */
+    GPIO_ResetPin(GPIO4, GPIO_PIN_0_MSK);     /* ION_ENB  = 0 */
+    GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);       /* ION_ENAB = 1 */
+    EPWM_Start(EPWM_CH_2_MSK);               /* EPWM2 on */
+    EPWM_Stop(EPWM_CH_3_MSK);                /* EPWM3 off */
 }
 
-/*****************************************************************************
- * @brief  Disable both half-bridges (gate signals off, EPWM stopped)
- *****************************************************************************/
-static void SN74HC21D_DisableAll(void)
+/**
+ * @brief  Select lower half-bridge (Channel B) for negative half-wave
+ *         ENA=0, ENB=1, ENAB=1, EPWM2 off, EPWM3 on
+ */
+static void SN74HC21D_SelectChannelB(void)
 {
-    /* Disable upper gate enables */
-    GPIO_ResetPin(ION_ENA_PORT,  ION_ENA_PIN_MSK);     /* P31 low */
-    GPIO_ResetPin(ION_ENAB_PORT, ION_ENAB_PIN_MSK);    /* P10 low */
-    GPIO_ResetPin(ION_ENB_PORT,  ION_ENB_PIN_MSK);     /* P40 low */
-
-    /* Disable lower gate enables */
-    GPIO_ResetPin(ION_ENB2_PORT, ION_ENB2_PIN_MSK);    /* P12 low */
-
-    /* Stop both EPWM outputs */
-    EPWM_Stop(ION_EPWM_COMBINED_MSK);
-    EPWM_DisableOutput(ION_EPWM_COMBINED_MSK);
+    GPIO_ResetPin(GPIO1, GPIO_PIN_2_MSK);     /* ION_ENA  = 0 */
+    GPIO_SetPin(GPIO4, GPIO_PIN_0_MSK);       /* ION_ENB  = 1 */
+    GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);       /* ION_ENAB = 1 */
+    EPWM_Stop(EPWM_CH_2_MSK);                /* EPWM2 off */
+    EPWM_Start(EPWM_CH_3_MSK);               /* EPWM3 on */
 }
 
-/*****************************************************************************
- * @brief  Initialize GPIO pins and EPWM channels for SN74HC21D
- *****************************************************************************/
+/**
+ * @brief  Set P07(CCP1B) duty cycle from ramp table index
+ *         duty = period * table[index] / 250
+ * @param  index: 0~249 (clamped to table range)
+ */
+static void SN74HC21D_SetAmpDuty(uint16_t index)
+{
+    uint16_t period;
+    uint16_t duty;
+    uint16_t table_val;
+
+    if (index >= AMP_RAMP_SIZE) {
+        index = AMP_RAMP_SIZE - 1;
+    }
+
+    table_val = g_amp_ramp_table[index];
+    period = CCP_ReadLoad(CCP1);
+    duty = (uint32_t)period * table_val / 250;
+    CCP_ConfigCompare(CCP1, CCPxB, duty);
+}
+
+/* =========================================================================
+ * Public API
+ * ========================================================================= */
+
+/**
+ * @brief  Initialize SN74HC21D half-bridge driver
+ *         Configures GPIO enables, EPWM channels, and CCP1B energy control
+ */
 void SN74HC21D_Init(void)
 {
-    /* ---- Configure GPIO pins as push-pull output ---- */
+    /* ---- GPIO enable pins: P12, P40, P10 as push-pull output, default low ---- */
 
-    /* P10 -> GPIO output (ION_ENAB) */
-    SYS_SET_IOCFG(IOP10CFG, SYS_IOCFG_P10_GPIO);
-    GPIO_CONFIG_IO_MODE(ION_ENAB_PORT, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
-    GPIO_ResetPin(ION_ENAB_PORT, ION_ENAB_PIN_MSK);
-
-    /* P31 -> GPIO output (ION_ENA) */
-    SYS_SET_IOCFG(IOP31CFG, SYS_IOCFG_P31_GPIO);
-    GPIO_CONFIG_IO_MODE(ION_ENA_PORT, GPIO_PIN_1, GPIO_MODE_OUTPUT_PUSH_PULL);
-    GPIO_ResetPin(ION_ENA_PORT, ION_ENA_PIN_MSK);
-
-    /* P40 -> GPIO output (ION_ENB) */
-    SYS_SET_IOCFG(IOP40CFG, SYS_IOCFG_P40_GPIO);
-    GPIO_CONFIG_IO_MODE(ION_ENB_PORT, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
-    GPIO_ResetPin(ION_ENB_PORT, ION_ENB_PIN_MSK);
-
-    /* P12 -> GPIO output (ION_ENB2) */
+    /* P12 -> ION_ENA (upper half-bridge enable) */
     SYS_SET_IOCFG(IOP12CFG, SYS_IOCFG_P12_GPIO);
-    GPIO_CONFIG_IO_MODE(ION_ENB2_PORT, GPIO_PIN_2, GPIO_MODE_OUTPUT_PUSH_PULL);
-    GPIO_ResetPin(ION_ENB2_PORT, ION_ENB2_PIN_MSK);
+    GPIO_CONFIG_IO_MODE(GPIO1, GPIO_PIN_2, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_ResetPin(GPIO1, GPIO_PIN_2_MSK);
 
-    /* ---- Configure EPWM pins ---- */
+    /* P40 -> ION_ENB (lower half-bridge enable) */
+    SYS_SET_IOCFG(IOP40CFG, SYS_IOCFG_P40_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO4, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_ResetPin(GPIO4, GPIO_PIN_0_MSK);
 
-    /* P00 -> EPWM2 (lower half-bridge PWM) */
+    /* P10 -> ION_ENAB (master enable) */
+    SYS_SET_IOCFG(IOP10CFG, SYS_IOCFG_P10_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO1, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_ResetPin(GPIO1, GPIO_PIN_0_MSK);
+
+    /* ---- EPWM signal pins ---- */
+
+    /* P00 -> EPWM2 (upper half-bridge frequency signal) */
     SYS_SET_IOCFG(IOP00CFG, SYS_IOCFG_P00_EPWM2);
 
-    /* P06 -> EPWM3 (upper half-bridge PWM) */
+    /* P06 -> EPWM3 (lower half-bridge frequency signal) */
     SYS_SET_IOCFG(IOP06CFG, SYS_IOCFG_P06_EPWM3);
 
-    /* ---- Configure EPWM2 & EPWM3 in independent mode ---- */
+    /* P31 -> EPWM4 (duty modulation signal) */
+    SYS_SET_IOCFG(IOP31CFG, SYS_IOCFG_P31_EPWM4);
+
+    /* ---- Configure EPWM2/3/4 via independent mode ---- */
     {
         INT32U freq[6];
         INT8U  div[6];
         uint8_t i;
 
         for (i = 0; i < 6; i++) {
-            freq[i] = 3000;  /* Default 3kHz carrier */
+            freq[i] = EPWM_BASE_FREQ;
             div[i]  = 1;
         }
+        /* EPWM4 at double frequency for duty modulation */
+        freq[4] = EPWM_BASE_FREQ * 2;
 
-        EPWM_Config_Independent_Mode(ION_EPWM_COMBINED_MSK, freq, div);
+        EPWM_Config_Independent_Mode(
+            EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK,
+            freq, div);
 
-        /* Start EPWM but keep output disabled until explicitly enabled */
-        EPWM_Start(ION_EPWM_COMBINED_MSK);
-        EPWM_DisableOutput(ION_EPWM_COMBINED_MSK);
+        /* Set duty cycles */
+        EPWM_ConfigChannelSymDutyScale(EPWM2, 48);   /* Upper: 48% */
+        EPWM_ConfigChannelSymDutyScale(EPWM3, 52);   /* Lower: 52% */
+        EPWM_ConfigChannelSymDutyScale(EPWM4, 20);   /* Modulation: 20% */
+
+        /* All EPWM channels stopped initially */
+        EPWM_Stop(EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK);
     }
 
-    /* ---- Configure P30 (CCP0A) as voltage control PWM ----
-     * P30 controls the supply voltage to the half-bridge transformer.
-     * Duty cycle 0~100% maps to output voltage 0~100%.
-     * Frequency: Pclk=3MHz / 3000 = 1kHz
+    /* ---- P07 as CCP1B for energy voltage control (1kHz) ----
+     * Energy_Init() from bsp_hard.c already configures CCP1:
+     *   - Pclk=3MHz, divider=1, reload=3000 -> 1kHz
+     *   - CCP1, CCPxB channel, 0% duty
+     * We only need to ensure it is started here.
      */
-    SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
-    SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
-    CCP_ConfigCLK(CCP0, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);
-    CCP_EnablePWMMode(CCP0);
-    CCP_ConfigDutyScale(CCP0, CCPxA, 0);   /* Start at 0% */
-    CCP_DisableReverseOutput(CCP0, CCPxA);
-    CCP_Start(CCP0);
+    CCP_Start(CCP1);
 
-    /* Ensure everything is in safe state */
-    SN74HC21D_DisableAll();
+    /* ---- Default state: everything off ---- */
+    g_energy_running = 0;
+    g_halfwave_flag_a = 1;
+    g_ramp_index_up = 0;
+    g_ramp_index_down = 0;
+    g_ramp_peak = 0;
+    g_energy_gear = 0;
 }
 
-/*****************************************************************************
- * @brief  Activate upper half-bank (ION+)
- * @note   Ensures lower half-bank is OFF first (dead-time enforced)
- *****************************************************************************/
-void SN74HC21D_OpenUpper(void)
+/**
+ * @brief  Start energy output at specified gear level
+ * @param  gear: 0~100, maps to amplitude peak (10 + gear)
+ *         gear=0 stops output immediately
+ * @note   Starts EPWM2 (channel A), CCP1B, and TMR0 for amplitude ramping
+ */
+void SN74HC21D_EnergyStart(uint8_t gear)
 {
-    /* Step 1: disable lower half-bridge */
-    GPIO_ResetPin(ION_ENB2_PORT, ION_ENB2_PIN_MSK);    /* P12 low */
-    EPWM_DisableOutput(ION_EPWM_LOWER_MSK);
+    if (gear > 100) gear = 100;
+    g_energy_gear = gear;
 
-    /* Step 2: dead-time */
-    SN74HC21D_DeadTime();
-
-    /* Step 3: enable upper gate signals */
-    GPIO_SetPin(ION_ENA_PORT,  ION_ENA_PIN_MSK);       /* P31 high */
-    GPIO_SetPin(ION_ENAB_PORT, ION_ENAB_PIN_MSK);      /* P10 high */
-    GPIO_SetPin(ION_ENB_PORT,  ION_ENB_PIN_MSK);       /* P40 high */
-
-    /* Step 4: enable upper EPWM output */
-    EPWM_EnableOutput(ION_EPWM_UPPER_MSK);
-}
-
-/*****************************************************************************
- * @brief  Activate lower half-bank (ION-)
- * @note   Ensures upper half-bank is OFF first (dead-time enforced)
- *****************************************************************************/
-void SN74HC21D_OpenLower(void)
-{
-    /* Step 1: disable upper half-bridge */
-    GPIO_ResetPin(ION_ENA_PORT,  ION_ENA_PIN_MSK);     /* P31 low */
-    GPIO_ResetPin(ION_ENAB_PORT, ION_ENAB_PIN_MSK);    /* P10 low */
-    GPIO_ResetPin(ION_ENB_PORT,  ION_ENB_PIN_MSK);     /* P40 low */
-    EPWM_DisableOutput(ION_EPWM_UPPER_MSK);
-
-    /* Step 2: dead-time */
-    SN74HC21D_DeadTime();
-
-    /* Step 3: enable lower gate signal */
-    GPIO_SetPin(ION_ENB2_PORT, ION_ENB2_PIN_MSK);      /* P12 high */
-
-    /* Step 4: enable lower EPWM output */
-    EPWM_EnableOutput(ION_EPWM_LOWER_MSK);
-}
-
-/*****************************************************************************
- * @brief  Emergency stop: all outputs off immediately
- *****************************************************************************/
-void SN74HC21D_StopAll(void)
-{
-    SN74HC21D_DisableAll();
-}
-
-/*****************************************************************************
- * @brief  Set EPWM duty cycle for upper half-bridge
- * @param  duty: 0~100 (percentage)
- *****************************************************************************/
-void SN74HC21D_SetDutyUpper(uint8_t duty)
-{
-    uint32_t period;
-    uint32_t compare;
-
-    if (duty > 100) duty = 100;
-    if (duty == 0) {
-        EPWM_SET_COMPARE(EPWM3, 0);
+    if (gear == 0)
+    {
+        SN74HC21D_EnergyStop();
         return;
     }
 
-    period  = EPWM->PERIOD[EPWM3];
-    compare = (period * duty) / 100;
-    if (compare == 0 && duty > 0) compare = 1;
-    EPWM_SET_COMPARE(EPWM3, (uint16_t)compare);
-}
+    /* Reset ramp state */
+    g_ramp_index_up = 0;
+    g_ramp_index_down = 0;
+    g_ramp_peak = 10 + (uint16_t)gear;
+    g_halfwave_flag_a = 1;
 
-/*****************************************************************************
- * @brief  Set EPWM duty cycle for lower half-bridge
- * @param  duty: 0~100 (percentage)
- *****************************************************************************/
-void SN74HC21D_SetDutyLower(uint8_t duty)
-{
-    uint32_t period;
-    uint32_t compare;
+    /* Start with channel A (upper half-bridge) */
+    SN74HC21D_SelectChannelA();
 
-    if (duty > 100) duty = 100;
-    if (duty == 0) {
-        EPWM_SET_COMPARE(EPWM2, 0);
-        return;
-    }
+    /* Start EPWM4 for duty modulation */
+    EPWM_Start(EPWM_CH_4_MSK);
 
-    period  = EPWM->PERIOD[EPWM2];
-    compare = (period * duty) / 100;
-    if (compare == 0 && duty > 0) compare = 1;
-    EPWM_SET_COMPARE(EPWM2, (uint16_t)compare);
-}
+    /* Ensure CCP1B is running (Energy_Init already configured it) */
+    CCP_Start(CCP1);
+    SN74HC21D_SetAmpDuty(0);
 
-/*****************************************************************************
- * @brief  Execute one step of the sine wave generation
- * @param  step: 0 .. (SINE_STEPS-1)
- *
- * Step 0~7:  positive half-cycle -> upper half-bridge active
- * Step 8~15: negative half-cycle -> lower half-bridge active
- *****************************************************************************/
-void SN74HC21D_SineWaveStep(uint8_t step)
-{
-    uint8_t duty;
-
-    step %= SINE_STEPS;
-    duty  = (uint8_t)(((uint16_t)g_sine_duty[step] * g_amplitude_scale) / 100);
-
-    if (step < (SINE_STEPS / 2))
-    {
-        /* Positive half-cycle: use upper half-bridge (ION+) */
-        SN74HC21D_SetDutyUpper(duty);
-        SN74HC21D_OpenUpper();
-    }
-    else
-    {
-        /* Negative half-cycle: use lower half-bridge (ION-) */
-        SN74HC21D_SetDutyLower(duty);
-        SN74HC21D_OpenLower();
-    }
-}
-
-/*****************************************************************************
- * @brief  Timer interrupt handler for sine wave stepping
- * @note   Call this from the timer ISR (e.g. TIM0 or TIM1)
- *         Each call advances the sine wave by one step
- *****************************************************************************/
-void SN74HC21D_SineWaveISR(void)
-{
-    if (!g_sine_running) return;
-
-    SN74HC21D_SineWaveStep(g_sine_step);
-
-    g_sine_step++;
-    if (g_sine_step >= SINE_STEPS) {
-        g_sine_step = 0;
-    }
-}
-
-/*****************************************************************************
- * @brief  Enable sine wave auto-generation
- * @param  freq_hz: desired sine wave frequency in Hz
- * @note   Timer interrupt rate = freq_hz * SINE_STEPS
- *         Example: 100Hz sine -> timer runs at 1600Hz
- *****************************************************************************/
-void SN74HC21D_SineWaveEnable(uint16_t freq_hz)
-{
-    uint32_t timer_reload;
-
-    if (freq_hz == 0) freq_hz = 1;
-    if (freq_hz > 500) freq_hz = 500;
-
-    g_sine_step = 0;
-    g_sine_running = 1;
-
-    /*
-     * Configure TIM0 for sine wave stepping.
-     * Timer clock = Pclk = 3MHz (assuming APB divider = 1)
-     * Timer interrupt rate = freq_hz * SINE_STEPS
-     * Timer reload = Pclk / (freq_hz * SINE_STEPS)
+    /* Configure and start TMR0 for amplitude ramp stepping.
+     * Timer drives the 0->peak->0 amplitude envelope on each half-wave.
+     * Reload = Pclk / (2 * RAMP_STEPS * desired_halfwave_freq)
+     * Default: 250ms per half-wave -> reload = 3000000 / (2 * 250 * 2000) = 3
      */
-    timer_reload = 3000000UL / ((uint32_t)freq_hz * SINE_STEPS);
-
     SYS_EnablePeripheralClk(SYS_CLK_TIMER01_MSK);
     TMR_ConfigClk(TMR0, TMR_CLK_SEL_APB, TMR_CLK_DIV_1);
     TMR_ConfigRunMode(TMR0, TMR_COUNT_PERIOD_MODE, TMR_BIT_32_MODE);
     TMR_DisableOneShotMode(TMR0);
-    TMR_SetPeriod(TMR0, timer_reload);
+    TMR_SetPeriod(TMR0, TMR0_DEFAULT_RELOAD);
+    TMR_ClearOverflowIntFlag(TMR0);
     TMR_EnableOverflowInt(TMR0);
     NVIC_EnableIRQ(TMR0_IRQn);
     NVIC_SetPriority(TMR0_IRQn, 1);
+
+    g_energy_running = 1;
     TMR_Start(TMR0);
 }
 
-/*****************************************************************************
- * @brief  Disable sine wave auto-generation and stop all outputs
- *****************************************************************************/
-void SN74HC21D_SineWaveDisable(void)
+/**
+ * @brief  Stop energy output completely
+ *         Stops TMR0, EPWM2/3/4, zeros CCP1B duty
+ */
+void SN74HC21D_EnergyStop(void)
 {
-    g_sine_running = 0;
+    /* Stop timer first */
+    g_energy_running = 0;
     TMR_Stop(TMR0);
     TMR_DisableOverflowInt(TMR0);
+    TMR_ClearOverflowIntFlag(TMR0);
 
-    /* Turn off P30 voltage control */
-    CCP_ConfigCompare(CCP0, CCPxA, 0);
+    /* Reset state */
+    g_halfwave_flag_a = 1;
+    g_ramp_index_up = 0;
+    g_ramp_index_down = 0;
+    g_ramp_peak = 0;
 
-    SN74HC21D_StopAll();
+    /* Zero CCP1B duty (energy voltage = 0) */
+    CCP_ConfigCompare(CCP1, CCPxB, 0);
+
+    /* Stop all EPWM channels */
+    EPWM_Stop(EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK);
+
+    /* Disable all GPIO enables */
+    GPIO_ResetPin(GPIO1, GPIO_PIN_2_MSK);     /* ION_ENA  = 0 */
+    GPIO_ResetPin(GPIO4, GPIO_PIN_0_MSK);     /* ION_ENB  = 0 */
+    GPIO_ResetPin(GPIO1, GPIO_PIN_0_MSK);     /* ION_ENAB = 0 */
 }
 
-/*****************************************************************************
- * @brief  Set sine wave amplitude scale
- * @param  percent: 0~100, amplitude as percentage of full scale
- * @note   Applied in SN74HC21D_SineWaveStep() as: duty = sine_duty * scale / 100
- *****************************************************************************/
-void SN74HC21D_SetAmplitude(uint8_t percent)
+/**
+ * @brief  Set energy gear level (0~100)
+ * @param  gear: 0~100, maps to amplitude peak (10 + gear)
+ * @note   If energy is already running, updates ramp peak immediately.
+ *         If not running, just stores the value for next start.
+ */
+void SN74HC21D_EnergySetGear(uint8_t gear)
 {
-    uint32_t period, compare;
+    if (gear > 100) gear = 100;
+    g_energy_gear = gear;
 
-    if (percent > 100) percent = 100;
-    g_amplitude_scale = percent;
+    if (g_energy_running)
+    {
+        /* Update ramp peak for next cycle */
+        g_ramp_peak = 10 + (uint16_t)gear;
+    }
+}
 
-    /* Set P30 (CCP0A) duty cycle to control supply voltage */
-    period = CCP_ReadLoad(CCP0);
-    compare = (uint32_t)period * percent / 100;
-    CCP_ConfigCompare(CCP0, CCPxA, (uint16_t)compare);
+/* =========================================================================
+ * TMR0 ISR handler (called from cms32f033_it.c TMR0_IRQHandler)
+ *
+ * Drives amplitude ramp on P07(CCP1B):
+ *   1. Ramp UP:   index 0 -> peak (gear + 10)
+ *   2. Ramp DOWN: index peak -> 0
+ *   3. Toggle half-bridge (A <-> B)
+ *   4. Repeat
+ * ========================================================================= */
+void SN74HC21D_AmpRampISR(void)
+{
+    if (!g_energy_running) return;
+
+    if (g_energy_gear == 0)
+    {
+        SN74HC21D_SetAmpDuty(0);
+        return;
+    }
+
+    if (g_halfwave_flag_a)
+    {
+        /* ---- Channel A (upper half-bridge, positive half-wave) ---- */
+        SN74HC21D_SelectChannelA();
+
+        if (g_ramp_index_up < g_ramp_peak)
+        {
+            /* Rising edge of envelope */
+            SN74HC21D_SetAmpDuty(g_ramp_index_up);
+            g_ramp_index_up++;
+        }
+        else if (g_ramp_index_up == g_ramp_peak)
+        {
+            /* Peak reached, prepare to descend */
+            g_ramp_index_down = g_ramp_index_up;
+        }
+
+        if (g_ramp_index_down > 0)
+        {
+            /* Falling edge of envelope */
+            g_ramp_index_down--;
+            SN74HC21D_SetAmpDuty(g_ramp_index_down);
+
+            if (g_ramp_index_down == 0)
+            {
+                /* Half-wave complete, switch to channel B */
+                g_ramp_index_up = 0;
+                g_halfwave_flag_a = 0;
+            }
+        }
+    }
+    else
+    {
+        /* ---- Channel B (lower half-bridge, negative half-wave) ---- */
+        SN74HC21D_SelectChannelB();
+
+        if (g_ramp_index_up < g_ramp_peak)
+        {
+            SN74HC21D_SetAmpDuty(g_ramp_index_up);
+            g_ramp_index_up++;
+        }
+        else if (g_ramp_index_up == g_ramp_peak)
+        {
+            g_ramp_index_down = g_ramp_index_up;
+        }
+
+        if (g_ramp_index_down > 0)
+        {
+            g_ramp_index_down--;
+            SN74HC21D_SetAmpDuty(g_ramp_index_down);
+
+            if (g_ramp_index_down == 0)
+            {
+                g_ramp_index_up = 0;
+                g_halfwave_flag_a = 1;
+            }
+        }
+    }
 }

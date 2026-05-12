@@ -169,13 +169,13 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				if (Flag.EnergyOutput == 1)
 				{
-					/* Enable energy output: start SN74HC21D sine wave at 100Hz */
-					SN74HC21D_SineWaveEnable(100);
+					/* Enable energy output: start half-bridge with amplitude ramp */
+					SN74HC21D_EnergyStart(Record.CoolingLevel);
 				}
 				else
 				{
 					/* Disable energy output */
-					SN74HC21D_SineWaveDisable();
+					SN74HC21D_EnergyStop();
 				}
 			}
 			break;
@@ -190,7 +190,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				/* Stop energy output */
 				Flag.EnergyOutput = 0;
 				Energy_Off();
-				SN74HC21D_SineWaveDisable();
+				SN74HC21D_EnergyStop();
 
 				/* Stop cooling + fan */
 				Flag.WorkStart = 0;
@@ -227,7 +227,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				{
 					vaildCmd = 1;
 					/* para[0]: energy value 0~100 (amplitude scale %) */
-					SN74HC21D_SetAmplitude(Frame->list.para[0]);
+					SN74HC21D_EnergySetGear(Frame->list.para[0]);
 				}break;
 
 	

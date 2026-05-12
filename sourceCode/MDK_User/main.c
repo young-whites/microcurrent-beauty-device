@@ -91,7 +91,7 @@ int main(void)
 			/* Stop energy output on bluetooth disconnect */
 			Flag.EnergyOutput = 0;
 			Energy_Off();
-			SN74HC21D_SineWaveDisable();
+			SN74HC21D_EnergyStop();
 		}
 	}
 }

@@ -1,34 +1,31 @@
 /**
  * @file    sn74hc21d.h
- * @brief   SN74HC21D dual 4-input AND gate driver for transformer half-bridge control
- * @note    Generates sine wave approximation via segmented square-wave switching
+ * @brief   SN74HC21D half-bridge driver for microcurrent energy output
  *
  * Hardware Connection:
  * ====================
- * SN74HC21D is a dual 4-input AND gate. Two groups control transformer half-bridges.
+ * SN74HC21D is a dual 4-input AND gate controlling transformer half-bridges.
+ * Upper and lower half-bridges must NEVER conduct simultaneously.
  *
- *   Upper Half-Bridge (ION+): SN74HC21D pins 9, 10, 12, 13
- *   Lower Half-Bridge (ION-): SN74HC21D pins 1, 2, 4, 5
- *   CRITICAL: Upper and lower half-bridges must NEVER conduct simultaneously.
+ * Pin Mapping:
+ *   +----------+--------+-----------+---------------------------------------+
+ *   | MCU IO   | Func   | Peripheral| Description                           |
+ *   +----------+--------+-----------+---------------------------------------+
+ *   | P07      | CCP1B  | PWM 1kHz  | Half-bridge supply voltage (energy)   |
+ *   | P00      | EPWM2  | 100Hz     | Upper half-bridge frequency signal    |
+ *   | P06      | EPWM3  | 100Hz     | Lower half-bridge frequency signal    |
+ *   | P31      | EPWM4  | 200Hz     | Duty modulation signal                |
+ *   | P12      | GPIO   | Output    | ION_ENA (upper half-bridge enable)    |
+ *   | P40      | GPIO   | Output    | ION_ENB (lower half-bridge enable)    |
+ *   | P10      | GPIO   | Output    | ION_ENAB (master enable)              |
+ *   | P30      | CCP0A  | PWM 1kHz  | Cooling pad (NOT modified here)       |
+ *   +----------+--------+-----------+---------------------------------------+
  *
- * Pin Mapping (SN74HC21D -> MCU):
- *   +----------+--------+-----------+----------------------------------+
- *   | HC21 Pin | MCU IO | Function  | Description                      |
- *   +----------+--------+-----------+----------------------------------+
- *   |    9,5   |  P10   | GPIO      | Enable (upper & lower gate ctrl) |
- *   |    2,12  |  P31   | GPIO      | Enable (upper & lower gate ctrl) |
- *   |    10    |  P06   | EPWM3     | PWM output to upper half-bridge  |
- *   |    13    |  P40   | GPIO      | Enable to upper half-bridge      |
- *   |    1     |  P12   | GPIO      | Enable to lower half-bridge      |
- *   |    4     |  P00   | EPWM2     | PWM output to lower half-bridge  |
- *   +----------+--------+-----------+----------------------------------+
- *
- * Sine Wave Generation:
- *   One sine period is divided into SINE_STEPS segments.
- *   Positive half-cycle: upper half-bridge active, lower off
- *   Negative half-cycle: lower half-bridge active, upper off
- *   EPWM duty cycle is modulated per segment to approximate sine amplitude.
- *   Dead-time is inserted at every half-bridge transition.
+ * Energy Control Principle:
+ *   - P07(CCP1B) duty cycle controls supply voltage to half-bridge -> amplitude
+ *   - EPWM2/3 alternate to create positive/negative half-waves
+ *   - TMR0 ISR drives amplitude ramp: 0 -> peak -> 0 on each half-wave
+ *   - Gear (0~100) maps to peak amplitude via ramp table
  */
 
 #ifndef __SN74HC21D_H
@@ -36,62 +33,52 @@
 
 #include "sys.h"
 
-/* ---- Sine wave parameters ---- */
-#define SINE_STEPS              16      /* Segments per sine period          */
-#define SINE_DEADTIME_US        50      /* Dead-time between transitions(us) */
+/* ---- GPIO pin definitions (for reference) ---- */
+/* P12: ION_ENA  - upper half-bridge enable (GPIO1, PIN_2) */
+/* P40: ION_ENB  - lower half-bridge enable (GPIO4, PIN_0) */
+/* P10: ION_ENAB - master enable            (GPIO1, PIN_0) */
 
-/* ---- GPIO pin aliases ---- */
-/* P10: controls HC21 pins 9 & 5 (series connection) */
-#define ION_ENAB_PORT           GPIO1
-#define ION_ENAB_PIN_MSK        GPIO_PIN_0_MSK
-
-/* P31: controls HC21 pins 2 & 12 (series connection) */
-#define ION_ENA_PORT            GPIO3
-#define ION_ENA_PIN_MSK         GPIO_PIN_1_MSK
-
-/* P40: controls HC21 pin 13 */
-#define ION_ENB_PORT            GPIO4
-#define ION_ENB_PIN_MSK         GPIO_PIN_0_MSK
-
-/* P12: controls HC21 pin 1 */
-#define ION_ENB2_PORT           GPIO1
-#define ION_ENB2_PIN_MSK        GPIO_PIN_2_MSK
-
-/* ---- EPWM channel aliases ---- */
-#define ION_EPWM_UPPER_MSK      EPWM_CH_3_MSK   /* P06 -> EPWM3 */
-#define ION_EPWM_LOWER_MSK      EPWM_CH_2_MSK   /* P00 -> EPWM2 */
-#define ION_EPWM_COMBINED_MSK   (ION_EPWM_UPPER_MSK | ION_EPWM_LOWER_MSK)
+/* ---- EPWM channel definitions (for reference) ---- */
+/* EPWM2 (P00): upper half-bridge signal, 100Hz */
+/* EPWM3 (P06): lower half-bridge signal, 100Hz */
+/* EPWM4 (P31): duty modulation, 200Hz */
 
 /* ---- API ---- */
 
-/** Initialize all SN74HC21D GPIO pins and EPWM channels */
+/**
+ * @brief  Initialize SN74HC21D half-bridge driver
+ *         Configures P12/P40/P10 as GPIO output
+ *         Configures P00=EPWM2, P06=EPWM3, P31=EPWM4 at 100Hz
+ *         Ensures P07=CCP1B is ready for energy voltage control
+ */
 void SN74HC21D_Init(void);
 
-/** Start upper half-bridge (ION+), ensure lower is off */
-void SN74HC21D_OpenUpper(void);
+/**
+ * @brief  Start energy output
+ * @param  gear: 0~100, amplitude level
+ *         gear=0 stops output immediately
+ *         Starts EPWM2, CCP1B, and TMR0 for amplitude ramping
+ */
+void SN74HC21D_EnergyStart(uint8_t gear);
 
-/** Start lower half-bridge (ION-), ensure upper is off */
-void SN74HC21D_OpenLower(void);
+/**
+ * @brief  Stop energy output completely
+ *         Stops TMR0, EPWM2/3/4, zeros CCP1B, disables enables
+ */
+void SN74HC21D_EnergyStop(void);
 
-/** Emergency stop: disable all outputs immediately */
-void SN74HC21D_StopAll(void);
+/**
+ * @brief  Set energy gear level (0~100)
+ * @param  gear: amplitude peak = 10 + gear
+ * @note   If running, updates ramp peak for next cycle
+ */
+void SN74HC21D_EnergySetGear(uint8_t gear);
 
-/** Set EPWM duty cycle for a specific half-bridge (0~100) */
-void SN74HC21D_SetDutyUpper(uint8_t duty);
-void SN74HC21D_SetDutyLower(uint8_t duty);
+/**
+ * @brief  TMR0 ISR amplitude ramp handler
+ * @note   Call from TMR0_IRQHandler in cms32f033_it.c
+ *         Drives 0->peak->0 amplitude envelope and half-bridge alternation
+ */
+void SN74HC21D_AmpRampISR(void);
 
-/** Execute one step of sine wave generation */
-void SN74HC21D_SineWaveStep(uint8_t step);
-
-/** Enable/disable sine wave auto-generation via timer interrupt */
-void SN74HC21D_SineWaveEnable(uint16_t freq_hz);
-void SN74HC21D_SineWaveDisable(void);
-
-/** Set sine wave amplitude scale (0~100%) */
-void SN74HC21D_SetAmplitude(uint8_t percent);
-
-/** Low-level dead-time insertion (blocking delay) */
-void SN74HC21D_DeadTime(void);
-
-void SN74HC21D_SineWaveISR(void);
 #endif /* __SN74HC21D_H */
