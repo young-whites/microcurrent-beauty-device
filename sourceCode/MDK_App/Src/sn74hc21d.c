@@ -123,9 +123,12 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     if (g_ramp_peak > AMP_RAMP_SIZE) g_ramp_peak = AMP_RAMP_SIZE;
     g_channel = 0;
 
+    /* Ensure CCP1 is running (may have been stopped by Energy_Off) */
+    CCP_Start(CCP1);
+    SetAmpDuty(0);
+
     /* Start with channel A */
     SelectA();
-    SetAmpDuty(0);
 
     /* Start TMR0 for amplitude ramp */
     SYS_EnablePeripheralClk(SYS_CLK_TIMER01_MSK);
