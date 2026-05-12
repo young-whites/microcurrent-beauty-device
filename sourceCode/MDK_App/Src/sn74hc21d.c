@@ -95,7 +95,8 @@ void SN74HC21D_Init(void)
 
     /* P07 as CCP1B for energy voltage control */
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
-    CCP_Start(CCP1);
+    CCP_Start(CCP1);        /* CON1: enable CCP1 module */
+    CCP_EnableRun(CCP1);    /* RUN:  enable CCP1 channel */
     CCP_ConfigCompare(CCP1, CCPxB, 0);
 
     g_running = 0;
@@ -119,6 +120,7 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     /* Ensure P07 pin mux and CCP1 are running */
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
+    CCP_EnableRun(CCP1);
     SetAmpDuty(0);
 
     /* Start EPWM2 and EPWM3 - they stay running forever */
