@@ -170,7 +170,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				if (Flag.EnergyOutput == 1)
 				{
 					/* Enable energy output: start half-bridge with amplitude ramp */
-					SN74HC21D_EnergyStart(Record.CoolingLevel);
+					SN74HC21D_EnergyStart(0);
 				}
 				else
 				{
