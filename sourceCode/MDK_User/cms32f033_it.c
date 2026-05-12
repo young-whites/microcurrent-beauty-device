@@ -180,6 +180,23 @@ void UART1_IRQHandler(void)
 ****************************************************************************/
 void EPWM_IRQHandler(void)
 {
+    /* Clear EPWM2 compare interrupt flags */
+    if (EPWM_GetUpCmpIntFlag(EPWM2))
+    {
+        EPWM_ClearUpCmpIntFlag(EPWM2);
+    }
+    if (EPWM_GetDownCmpIntFlag(EPWM2))
+    {
+        EPWM_ClearDownCmpIntFlag(EPWM2);
+    }
 
-
+    /* Clear EPWM3 compare interrupt flags */
+    if (EPWM_GetUpCmpIntFlag(EPWM3))
+    {
+        EPWM_ClearUpCmpIntFlag(EPWM3);
+    }
+    if (EPWM_GetDownCmpIntFlag(EPWM3))
+    {
+        EPWM_ClearDownCmpIntFlag(EPWM3);
+    }
 }
