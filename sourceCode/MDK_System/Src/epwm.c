@@ -109,3 +109,32 @@ void EPWM_Config_Independent_Mode(uint32_t chMask, INT32U Freq[6], INT8U Div[6])
 
 
 
+
+/**
+  * @brief  Dynamically set duty cycle for a single EPWM channel.
+  *         Uses center-aligned (symmetric) duty register.
+  * @param  ch_idx: EPWM channel index (0~5)
+  * @param  duty: duty cycle percentage (0~100)
+  */
+void EPWM_SetDutyPercent(uint8_t ch_idx, uint8_t duty)
+{
+    uint32_t period, compare;
+
+    if (ch_idx > 5 || duty > 100) return;
+
+    period = EPWM_ReadPeriod(ch_idx);
+    compare = (uint32_t)period * duty / 100;
+    EPWM_ConfigChannelSymDuty(ch_idx, compare);
+}
+
+
+/**
+  * @brief  Read the period register value for a given EPWM channel.
+  * @param  ch_idx: EPWM channel index (0~5)
+  * @retval Period value (for center-aligned mode this is half-period)
+  */
+uint32_t EPWM_ReadPeriod(uint8_t ch_idx)
+{
+    if (ch_idx > 5) return 0;
+    return EPWM->PERIOD[ch_idx];
+}
