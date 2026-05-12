@@ -15,31 +15,49 @@
 /* =========================================================================
  * Constants
  * ========================================================================= */
-#define AMP_RAMP_SIZE       60
+#define 
 #define EPWM_CARRIER_FREQ   1645    /* Match reference Water_PwmFreq */
 #define TMR0_RELOAD         1500    /* ~0.5ms per step at Pclk=3MHz */
+
+/* =========================================================================
+ * Sine table: 64 points, half-sine (0..PI), values 0~255
+ * Used for smooth sinusoidal envelope on CCP1B duty.
+ * ========================================================================= */
+static const uint8_t g_sine64[64] = {
+      0,   6,  12,  19,  25,  31,  37,  43,
+     49,  54,  60,  65,  71,  76,  81,  85,
+     90,  94,  98, 102, 106, 109, 112, 115,
+    118, 121, 123, 125, 127, 128, 130, 131, /* peak at 31 */
+    131, 131, 130, 128, 127, 125, 123, 121,
+    118, 115, 112, 109, 106, 102,  98,  94,
+     90,  85,  81,  76,  71,  65,  60,  54,
+     49,  43,  37,  31,  25,  19,  12,   6
+};
+#define SINE_STEPS  64
 
 /* =========================================================================
  * Module state
  * ========================================================================= */
 static volatile uint8_t  g_running       = 0;
 static volatile uint8_t  g_channel       = 0;   /* 0=upper(A), 1=lower(B) */
-static volatile uint16_t g_ramp_idx      = 0;
-static volatile uint16_t g_ramp_peak     = 30;
-static volatile uint8_t  g_gear          = 0;
+static volatile uint16_t g_sine_idx      = 0;    /* Current sine step 0~63 */
+static volatile uint8_t  g_gear          = 0;    /* Gear 0~100 */
+static volatile uint8_t  g_gear_scale    = 100;  /* Scaled: gear mapped to 0~255 */
 
 /* =========================================================================
  * Internal helpers
  * ========================================================================= */
 
-/** Set P07 (CCP1B) duty from ramp index. */
-static void SetAmpDuty(uint16_t idx)
+/** Set P07 (CCP1B) duty from sine table index, scaled by gear. */
+static void SetSineDuty(uint16_t sine_idx)
 {
     uint32_t period, duty;
-    if (idx > g_ramp_peak) idx = g_ramp_peak;
-    if (g_ramp_peak == 0) return;
+    uint16_t sine_val;
+    sine_idx %= SINE_STEPS;
+    sine_val = g_sine64[sine_idx];
     period = CCP_ReadLoad(CCP1);
-    duty = period * idx / g_ramp_peak;
+    duty = period * sine_val * g_gear_scale / 25500;
+    if (duty > period) duty = period;
     CCP_ConfigCompare(CCP1, CCPxB, (uint16_t)duty);
 }
 
@@ -121,7 +139,7 @@ void SN74HC21D_Init(void)
 
     g_running = 0;
     g_gear = 0;
-    g_ramp_peak = 30;
+    g_gear_scale = 100;
 }
 
 void SN74HC21D_EnergyStart(uint8_t gear)
@@ -132,16 +150,15 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     }
     if (g_gear == 0) g_gear = 50;
 
-    g_ramp_idx = 0;
-    g_ramp_peak = 10 + (uint16_t)g_gear;
-    if (g_ramp_peak > AMP_RAMP_SIZE) g_ramp_peak = AMP_RAMP_SIZE;
+    g_sine_idx = 0;
+    g_gear_scale = (uint8_t)(g_gear * 255 / 100);
     g_channel = 0;
 
     /* Restart CCP1 (was stopped at end of Init) */
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
     CCP_EnableRun(CCP1);
-    SetAmpDuty(g_ramp_peak);  /* Set initial duty to current energy level */
+    SetSineDuty(g_sine_idx);  /* Set initial duty to current energy level */
 
     /* Start EPWM2 and EPWM3 - they stay running forever */
     EPWM_ClearDownCmpIntFlag(EPWM2);
@@ -197,30 +214,22 @@ void SN74HC21D_EnergySetGear(uint8_t gear)
     if (gear > 100) gear = 100;
     g_gear = gear;
     if (g_running) {
-        g_ramp_peak = 10 + (uint16_t)gear;
-        if (g_ramp_peak > AMP_RAMP_SIZE) g_ramp_peak = AMP_RAMP_SIZE;
+        g_gear_scale = (uint8_t)(gear * 255 / 100);
     }
 }
 
-/* TMR0 ISR: ramp CCP1B duty, toggle half-bridge at boundaries */
+/* TMR0 ISR: step through sine table, toggle half-bridge at end */
 void SN74HC21D_AmpRampISR(void)
 {
     if (!g_running) return;
-    if (g_gear == 0) { SetAmpDuty(0); return; }
+    if (g_gear == 0) { SetSineDuty(0); return; }
 
-    if (g_ramp_idx <= g_ramp_peak)
+    SetSineDuty(g_sine_idx);
+    g_sine_idx++;
+
+    if (g_sine_idx >= SINE_STEPS)
     {
-        SetAmpDuty(g_ramp_idx);
-        g_ramp_idx++;
-    }
-    else if (g_ramp_idx <= g_ramp_peak * 2)
-    {
-        SetAmpDuty(g_ramp_peak * 2 - g_ramp_idx);
-        g_ramp_idx++;
-    }
-    else
-    {
-        g_ramp_idx = 0;
+        g_sine_idx = 0;
         if (g_channel == 0) { g_channel = 1; SelectB(); }
         else                { g_channel = 0; SelectA(); }
     }
