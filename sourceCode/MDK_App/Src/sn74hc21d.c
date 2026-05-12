@@ -12,8 +12,9 @@
 #include "epwm.h"
 
 /* ---- Internal state ---- */
-static volatile uint8_t  g_sine_running  = 0;
-static volatile uint8_t  g_sine_step     = 0;
+static volatile uint8_t  g_sine_running    = 0;
+static volatile uint8_t  g_sine_step       = 0;
+static volatile uint8_t  g_amplitude_scale = 100;  /* Amplitude scale 0~100% */
 
 /* Pre-computed sine duty table (16 steps, normalized to 0~100)
  * Values = |sin(step * 2*PI / 16)| * 100
@@ -215,7 +216,7 @@ void SN74HC21D_SineWaveStep(uint8_t step)
     uint8_t duty;
 
     step %= SINE_STEPS;
-    duty  = g_sine_duty[step];
+    duty  = (uint8_t)(((uint16_t)g_sine_duty[step] * g_amplitude_scale) / 100);
 
     if (step < (SINE_STEPS / 2))
     {
@@ -292,4 +293,15 @@ void SN74HC21D_SineWaveDisable(void)
     TMR_Stop(TMR0);
     TMR_DisableOverflowInt(TMR0);
     SN74HC21D_StopAll();
+}
+
+/*****************************************************************************
+ * @brief  Set sine wave amplitude scale
+ * @param  percent: 0~100, amplitude as percentage of full scale
+ * @note   Applied in SN74HC21D_SineWaveStep() as: duty = sine_duty * scale / 100
+ *****************************************************************************/
+void SN74HC21D_SetAmplitude(uint8_t percent)
+{
+    if (percent > 100) percent = 100;
+    g_amplitude_scale = percent;
 }

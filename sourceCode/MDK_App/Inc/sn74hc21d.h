@@ -87,6 +87,9 @@ void SN74HC21D_SineWaveStep(uint8_t step);
 void SN74HC21D_SineWaveEnable(uint16_t freq_hz);
 void SN74HC21D_SineWaveDisable(void);
 
+/** Set sine wave amplitude scale (0~100%) */
+void SN74HC21D_SetAmplitude(uint8_t percent);
+
 /** Low-level dead-time insertion (blocking delay) */
 void SN74HC21D_DeadTime(void);
 

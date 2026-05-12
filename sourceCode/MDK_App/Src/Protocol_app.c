@@ -1,6 +1,7 @@
 #include "Protocol_app.h"
 #include "bsp_pid.h"
 #include "bsp_hard.h"
+#include "sn74hc21d.h"
 
 
 
@@ -168,14 +169,13 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				if (Flag.EnergyOutput == 1)
 				{
-					/* Enable energy output: start CCP1 PWM */
-					CCP_Start(CCP1);
-					CCP_EnableRun(CCP1);
+					/* Enable energy output: start SN74HC21D sine wave at 100Hz */
+					SN74HC21D_SineWaveEnable(100);
 				}
 				else
 				{
 					/* Disable energy output */
-					Energy_Off();
+					SN74HC21D_SineWaveDisable();
 				}
 			}
 			break;
@@ -190,6 +190,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				/* Stop energy output */
 				Flag.EnergyOutput = 0;
 				Energy_Off();
+				SN74HC21D_SineWaveDisable();
 
 				/* Stop cooling + fan */
 				Flag.WorkStart = 0;
@@ -225,8 +226,8 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case FRAME_FUNC_ENERGY_SET:
 				{
 					vaildCmd = 1;
-					/* para[0]: energy value 0~100 (duty cycle %) */
-					Energy_SetPower(Frame->list.para[0]);
+					/* para[0]: energy value 0~100 (amplitude scale %) */
+					SN74HC21D_SetAmplitude(Frame->list.para[0]);
 				}break;
 
 	

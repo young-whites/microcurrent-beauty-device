@@ -90,17 +90,6 @@ void EPWM_Config_Independent_Mode(uint32_t chMask, INT32U Freq[6], INT8U Div[6])
 				EPWM_ConfigChannelSymDuty(i, 100);							// 中心对齐占空比
 				EPWM_DisableDeadZone(mask);									// 关闭死区
 			}
-
-			// if (Record.K1ElecMode != 0)
-			// {
-			// 	EPWM_Start(mask);
-			// }
-			// else
-			// {
-			// 	/*停止EPWM*/
-			// 	EPWM_Stop(mask);											// 停止EPWMi
-			// }
-
 		}
 		mask <<= 1;
 	}

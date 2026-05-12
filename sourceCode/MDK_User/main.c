@@ -4,6 +4,7 @@
 #include "bsp_hard.h"
 #include "adc.h"
 #include "debug_uart.h"
+#include "sn74hc21d.h"
 
 
 
@@ -91,6 +92,7 @@ int main(void)
 			/* Stop energy output on bluetooth disconnect */
 			Flag.EnergyOutput = 0;
 			Energy_Off();
+			SN74HC21D_SineWaveDisable();
 		}
 	}
 }
