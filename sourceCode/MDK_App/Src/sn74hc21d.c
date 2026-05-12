@@ -125,7 +125,7 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     if (g_ramp_peak > AMP_RAMP_SIZE) g_ramp_peak = AMP_RAMP_SIZE;
     g_channel = 0;
 
-    /* Ensure P07 pin mux and CCP1 are running */
+    /* Restart CCP1 (was stopped at end of Init) */
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
     CCP_EnableRun(CCP1);
