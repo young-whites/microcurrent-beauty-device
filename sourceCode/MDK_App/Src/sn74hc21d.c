@@ -100,9 +100,7 @@ void SN74HC21D_Init(void)
     SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
     CCP_ConfigCLK(CCP1, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);  /* 1kHz */
     CCP_EnablePWMMode(CCP1);
-    CCP_ConfigDutyScale(CCP1, CCPxA, 0);
     CCP_ConfigDutyScale(CCP1, CCPxB, 0);
-    CCP_DisableReverseOutput(CCP1, CCPxA);
     CCP_DisableReverseOutput(CCP1, CCPxB);
     NVIC_EnableIRQ(CCP_IRQn);
     NVIC_SetPriority(CCP_IRQn, 0);
