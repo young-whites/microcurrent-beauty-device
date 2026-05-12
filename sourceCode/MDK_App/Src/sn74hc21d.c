@@ -274,7 +274,7 @@ void SN74HC21D_SineWaveEnable(uint16_t freq_hz)
 
     SYS_EnablePeripheralClk(SYS_CLK_TIMER01_MSK);
     TMR_ConfigClk(TMR0, TMR_CLK_SEL_APB, TMR_CLK_DIV_1);
-    TMR_ConfigRunMode(TMR0, TMR_COUNT_PERIOD_MODE, TMR_BIT_16_MODE);
+    TMR_ConfigRunMode(TMR0, TMR_COUNT_PERIOD_MODE, TMR_BIT_32_MODE);
     TMR_DisableOneShotMode(TMR0);
     TMR_SetPeriod(TMR0, timer_reload);
     TMR_EnableOverflowInt(TMR0);
