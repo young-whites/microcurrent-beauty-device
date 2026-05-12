@@ -96,11 +96,11 @@ void SN74HC21D_Init(void)
     /* Start EPWM2/3 immediately - match reference code pattern */
     EPWM_ClearDownCmpIntFlag(EPWM2);
     EPWM_EnableDownCmpInt(EPWM_CH_2_MSK);
-    EPWM_Start(EPWM_CH_2_MSK);
+    EPWM_Stop(EPWM_CH_2_MSK);
 
     EPWM_ClearDownCmpIntFlag(EPWM3);
     EPWM_EnableDownCmpInt(EPWM_CH_3_MSK);
-    EPWM_Start(EPWM_CH_3_MSK);
+    EPWM_Stop(EPWM_CH_3_MSK);
 
     /* ---- CCP1 init for energy voltage control (P07 as CCP1B) ----
      * Only configure CCP1. CCP0 is for cooling (P30), do not touch.
