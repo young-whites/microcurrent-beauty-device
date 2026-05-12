@@ -129,7 +129,7 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
     CCP_EnableRun(CCP1);
-    SetAmpDuty(0);
+    SetAmpDuty(g_ramp_peak);  /* Set initial duty to current energy level */
 
     /* Start EPWM2 and EPWM3 - they stay running forever */
     EPWM_ClearDownCmpIntFlag(EPWM2);
