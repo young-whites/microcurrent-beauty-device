@@ -41,7 +41,6 @@ static volatile uint8_t  g_running       = 0;
 static volatile uint8_t  g_channel       = 0;   /* 0=upper(A), 1=lower(B) */
 static volatile uint16_t g_sine_idx      = 0;    /* Current sine step 0~63 */
 static volatile uint8_t  g_gear          = 0;    /* Gear 0~100 */
-static volatile uint8_t  g_gear_scale    = 100;  /* Scaled: gear mapped to 0~255 */
 
 /* =========================================================================
  * Internal helpers
@@ -55,7 +54,8 @@ static void SetSineDuty(uint16_t sine_idx)
     sine_idx %= SINE_STEPS;
     sine_val = g_sine64[sine_idx];
     period = CCP_ReadLoad(CCP1);
-    duty = period * sine_val * g_gear_scale / 25500;
+    /* duty = period * (sine_val / 131) * (gear / 100) */
+    duty = (uint32_t)period * sine_val * g_gear / 13100;
     if (duty > period) duty = period;
     CCP_ConfigCompare(CCP1, CCPxB, (uint16_t)duty);
 }
@@ -138,7 +138,6 @@ void SN74HC21D_Init(void)
 
     g_running = 0;
     g_gear = 0;
-    g_gear_scale = 100;
 }
 
 void SN74HC21D_EnergyStart(uint8_t gear)
@@ -150,7 +149,6 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     if (g_gear == 0) g_gear = 50;
 
     g_sine_idx = 0;
-    g_gear_scale = (uint8_t)(g_gear * 255 / 100);
     g_channel = 0;
 
     /* Restart CCP1 (was stopped at end of Init) */
@@ -213,7 +211,6 @@ void SN74HC21D_EnergySetGear(uint8_t gear)
     if (gear > 100) gear = 100;
     g_gear = gear;
     if (g_running) {
-        g_gear_scale = (uint8_t)(gear * 255 / 100);
     }
 }
 
