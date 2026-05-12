@@ -199,4 +199,14 @@ void EPWM_IRQHandler(void)
     {
         EPWM_ClearDownCmpIntFlag(EPWM3);
     }
+
+    /* Clear EPWM4 compare interrupt flags */
+    if (EPWM_GetUpCmpIntFlag(EPWM4))
+    {
+        EPWM_ClearUpCmpIntFlag(EPWM4);
+    }
+    if (EPWM_GetDownCmpIntFlag(EPWM4))
+    {
+        EPWM_ClearDownCmpIntFlag(EPWM4);
+    }
 }

@@ -79,8 +79,9 @@ void SN74HC21D_Init(void)
     GPIO_ResetPin(GPIO1, GPIO_PIN_0_MSK);
 
     /* EPWM signal pins */
-    SYS_SET_IOCFG(IOP00CFG, SYS_IOCFG_P00_EPWM2);
-    SYS_SET_IOCFG(IOP06CFG, SYS_IOCFG_P06_EPWM3);
+    SYS_SET_IOCFG(IOP00CFG, SYS_IOCFG_P00_EPWM2);  /* P00 -> EPWM2 -> HC21 pin 4 (lower) */
+    SYS_SET_IOCFG(IOP06CFG, SYS_IOCFG_P06_EPWM3);  /* P06 -> EPWM3 -> HC21 pin 10 (upper) */
+    SYS_SET_IOCFG(IOP31CFG, SYS_IOCFG_P31_EPWM4);  /* P31 -> EPWM4 -> HC21 pins 2,12 duty ctrl */
 
     /* Configure EPWM2 and EPWM3 at carrier frequency */
     {
@@ -88,9 +89,11 @@ void SN74HC21D_Init(void)
         INT8U  div[6];
         uint8_t i;
         for (i = 0; i < 6; i++) { freq[i] = EPWM_CARRIER_FREQ; div[i] = 1; }
-        EPWM_Config_Independent_Mode(EPWM_CH_2_MSK | EPWM_CH_3_MSK, freq, div);
+        freq[4] = EPWM_CARRIER_FREQ * 2; /* EPWM4 at 2x frequency for duty modulation */
+        EPWM_Config_Independent_Mode(EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK, freq, div);
         EPWM_ConfigChannelSymDutyScale(EPWM2, 48);
         EPWM_ConfigChannelSymDutyScale(EPWM3, 52);
+        EPWM_ConfigChannelSymDutyScale(EPWM4, 20);
     }
 
     /* Start EPWM2/3 immediately - match reference code pattern */
@@ -148,6 +151,10 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     EPWM_ClearDownCmpIntFlag(EPWM3);
     EPWM_EnableDownCmpInt(EPWM_CH_3_MSK);
     EPWM_Start(EPWM_CH_3_MSK);
+
+    EPWM_ClearDownCmpIntFlag(EPWM4);
+    EPWM_EnableDownCmpInt(EPWM_CH_4_MSK);
+    EPWM_Start(EPWM_CH_4_MSK);
 
     /* Select channel A to start */
     SelectA();
