@@ -246,7 +246,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			switch(Frame->list.func)
 			{
 				
-				case	FRAME_FUNC_VERSION:
+				case FRAME_FUNC_VERSION:
 				{
 					vaildCmd = 1;
 					Frame->list.len += 2;
@@ -254,7 +254,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					Frame->list.para[1] = SUB_VERSION;
 				}break;
 
-			case 0x41:
+				case 0x41:
 				{
 					vaildCmd = 1;
 					Frame->list.len += 2;

@@ -59,8 +59,7 @@ int main(void)
 	/* Debug UART0 init for temperature data output */
 	Debug_UART_Init();
 	SystemParaInit();
-
-
+	
 	while(1)
 	{
 		

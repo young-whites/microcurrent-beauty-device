@@ -93,4 +93,5 @@ void SN74HC21D_SetAmplitude(uint8_t percent);
 /** Low-level dead-time insertion (blocking delay) */
 void SN74HC21D_DeadTime(void);
 
+void SN74HC21D_SineWaveISR(void);
 #endif /* __SN74HC21D_H */

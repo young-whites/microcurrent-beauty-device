@@ -189,8 +189,6 @@ static void _KEY_Power_Press(void)
 {
 	bPowerShort = 1;
 	BEEP_ShortPress();
-
-
 }
 
 
