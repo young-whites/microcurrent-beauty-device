@@ -20,7 +20,7 @@
  * Constants
  * ========================================================================= */
 #define AMP_RAMP_SIZE       60      /* Steps per ramp (0->peak->0) */
-#define EPWM_BASE_FREQ      100     /* EPWM signal frequency (Hz) */
+#define EPWM_BASE_FREQ      1645    /* EPWM carrier frequency (Hz), match reference */
 #define TMR0_RELOAD         1500    /* ~0.5ms per step at Pclk=3MHz */
 
 /* =========================================================================
