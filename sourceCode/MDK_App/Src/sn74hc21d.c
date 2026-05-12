@@ -234,19 +234,22 @@ void SN74HC21D_Init(void)
  */
 void SN74HC21D_EnergyStart(uint8_t gear)
 {
-    if (gear > 100) gear = 100;
-    g_energy_gear = gear;
-
-    if (gear == 0)
+    if (gear > 0)
     {
-        SN74HC21D_EnergyStop();
-        return;
+        if (gear > 100) gear = 100;
+        g_energy_gear = gear;
+    }
+
+    /* Use stored gear if parameter is 0 */
+    if (g_energy_gear == 0)
+    {
+        g_energy_gear = 50;  /* Default to 50% if never set */
     }
 
     /* Reset ramp state */
     g_ramp_index_up = 0;
     g_ramp_index_down = 0;
-    g_ramp_peak = 10 + (uint16_t)gear;
+    g_ramp_peak = 10 + (uint16_t)g_energy_gear;
     g_halfwave_flag_a = 1;
 
     /* Start with channel A (upper half-bridge) */
