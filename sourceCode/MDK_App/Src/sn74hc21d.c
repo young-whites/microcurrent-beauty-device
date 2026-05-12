@@ -93,44 +93,21 @@ void SN74HC21D_Init(void)
         EPWM_ConfigChannelSymDutyScale(EPWM3, 52);
     }
 
-    /* ---- CCP PWM init (match reference CCP_Config_PWM_Mode) ---- */
-    /* P07 as CCP1B for energy voltage control */
+    /* ---- CCP1 init for energy voltage control (P07 as CCP1B) ----
+     * Only configure CCP1. CCP0 is for cooling (P30), do not touch.
+     */
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
-
-    /* P30 as CCP0A for cooling (already done by Cooling_Init, but ensure) */
-    SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
-
     SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
-
-    /* Configure both CCP0 and CCP1 clocks */
-    CCP_ConfigCLK(CCP0, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 15000); /* 200Hz */
     CCP_ConfigCLK(CCP1, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);  /* 1kHz */
-
-    /* PWM mode for both */
-    CCP_EnablePWMMode(CCP0);
     CCP_EnablePWMMode(CCP1);
-
-    /* Set all 4 channels to 0% duty */
-    CCP_ConfigDutyScale(CCP0, CCPxA, 0);
-    CCP_ConfigDutyScale(CCP0, CCPxB, 0);
     CCP_ConfigDutyScale(CCP1, CCPxA, 0);
     CCP_ConfigDutyScale(CCP1, CCPxB, 0);
-
-    /* Disable reverse output for all channels */
-    CCP_DisableReverseOutput(CCP0, CCPxA);
-    CCP_DisableReverseOutput(CCP0, CCPxB);
     CCP_DisableReverseOutput(CCP1, CCPxA);
     CCP_DisableReverseOutput(CCP1, CCPxB);
-
-    /* CCP interrupt */
     NVIC_EnableIRQ(CCP_IRQn);
     NVIC_SetPriority(CCP_IRQn, 0);
-
-    /* Enable then stop (module ready, start on demand) */
-    CCP_EnableRun(CCP0);
     CCP_EnableRun(CCP1);
-    CCP_Stop(CCP0);
-    CCP_Stop(CCP1);
+    CCP_Stop(CCP1);  /* Ready, start on demand */
 
     g_running = 0;
     g_gear = 0;
