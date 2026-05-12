@@ -93,7 +93,8 @@ void SN74HC21D_Init(void)
         EPWM_ConfigChannelSymDutyScale(EPWM3, 52);
     }
 
-    /* CCP1B for energy voltage (already configured by Energy_Init) */
+    /* P07 as CCP1B for energy voltage control */
+    SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
     CCP_ConfigCompare(CCP1, CCPxB, 0);
 
@@ -115,7 +116,8 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     if (g_ramp_peak > AMP_RAMP_SIZE) g_ramp_peak = AMP_RAMP_SIZE;
     g_channel = 0;
 
-    /* Ensure CCP1 is running */
+    /* Ensure P07 pin mux and CCP1 are running */
+    SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
     SetAmpDuty(0);
 
