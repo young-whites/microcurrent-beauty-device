@@ -15,8 +15,8 @@
 /* =========================================================================
  * Constants
  * ========================================================================= */
-#define EPWM_CARRIER_FREQ   200     /* EPWM carrier (Hz) - slow enough to see on scope */
-#define TMR0_RELOAD         12000   /* ~4ms per step at Pclk=3MHz, 256ms/half-wave */
+#define EPWM_CARRIER_FREQ   100     /* EPWM carrier (Hz) */
+#define TMR0_RELOAD         24000   /* ~8ms per step at Pclk=3MHz, 512ms/half-wave */
 
 /* =========================================================================
  * Sine table: 64 points, half-sine (0..PI), values 0~255
