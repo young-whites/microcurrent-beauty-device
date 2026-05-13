@@ -209,9 +209,23 @@ void SN74HC21D_EnergyStop(void)
 void SN74HC21D_EnergySetGear(uint8_t gear)
 {
     if (gear > 100) gear = 100;
-    g_gear = gear;
-    if (g_running) {
+
+    if (gear == 0) {
+        /* Energy set to 0 -> full shutdown: stop EPWM, reset GPIO, prevent residual output */
+        SN74HC21D_EnergyStop();
+        g_gear = 0;
+        return;
     }
+
+    /* gear > 0 */
+    if (!g_running) {
+        /* Currently stopped -> restart, sine_idx=0 ramps up from low naturally */
+        SN74HC21D_EnergyStart(gear);
+        return;
+    }
+
+    /* Running -> adjust gear */
+    g_gear = gear;
 }
 
 /* TMR0 ISR: step through sine table, toggle half-bridge at end */
