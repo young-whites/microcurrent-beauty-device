@@ -209,22 +209,36 @@ void SN74HC21D_EnergyStop(void)
 void SN74HC21D_EnergySetGear(uint8_t gear)
 {
     if (gear > 100) gear = 100;
+    if (!g_running && gear == 0) return;  /* Already stopped, nothing to do */
 
     if (gear == 0) {
-        /* Energy set to 0 -> full shutdown: stop EPWM, reset GPIO, prevent residual output */
-        SN74HC21D_EnergyStop();
+        /* Energy set to 0 -> halt EPWM/GPIO output, keep g_running=1 so no re-click needed */
+        TMR_Stop(TMR0);
+        CCP_ConfigCompare(CCP1, CCPxB, 0);
+        EPWM_Stop(EPWM_CH_2_MSK | EPWM_CH_3_MSK);
+        GPIO_ResetPin(GPIO1, GPIO_PIN_2_MSK);  /* ION_ENA = 0 */
+        GPIO_ResetPin(GPIO4, GPIO_PIN_0_MSK);  /* ION_ENB = 0 */
+        GPIO_ResetPin(GPIO1, GPIO_PIN_0_MSK);  /* ION_ENAB = 0 */
         g_gear = 0;
         return;
     }
 
     /* gear > 0 */
-    if (!g_running) {
-        /* Currently stopped -> restart, sine_idx=0 ramps up from low naturally */
-        SN74HC21D_EnergyStart(gear);
+    if (g_running && g_gear == 0) {
+        /* Was halted at 0 -> resume EPWM/GPIO, sine ramp starts from low */
+        g_gear = gear;
+        g_sine_idx = 0;
+        g_channel = 0;
+        CCP_Start(CCP1);
+        CCP_EnableRun(CCP1);
+        SetSineDuty(0);
+        EPWM_Start(EPWM_CH_2_MSK | EPWM_CH_3_MSK);
+        SelectA();
+        TMR_Start(TMR0);
         return;
     }
 
-    /* Running -> adjust gear */
+    /* Normal gear adjustment while running */
     g_gear = gear;
 }
 
