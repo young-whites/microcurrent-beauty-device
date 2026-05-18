@@ -230,6 +230,16 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					SN74HC21D_EnergySetGear(Frame->list.para[0]);
 				}break;
 
+				case FRAME_FUNC_ENERGY_MODE:
+				{
+					vaildCmd = 1;
+					/* para[0]: mode 1 or 2 (APP sends 1-based, internally 0-based) */
+					uint8_t mode = Frame->list.para[0];
+					if (mode >= 1 && mode <= OUTPUT_MODE_COUNT) {
+						SN74HC21D_SetMode(mode - 1);
+					}
+				}break;
+
 	
 				default:
 						break;

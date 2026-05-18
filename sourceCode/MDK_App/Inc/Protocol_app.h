@@ -25,6 +25,7 @@
 #define		FRAME_FUNC_UPGRADE			(0xAA)		// 功能吗：远程升级
 
 #define		SET_COOLING_LEVEL			(0x0C)		// Cooling target temperature level
+#define		FRAME_FUNC_ENERGY_MODE		(0x0D)		// Energy output mode switch (1 or 2)
 //------------------------------------------------------------------------
 #define		PARA_SIZE_MAX				(3)			// 最大支持的参数列表长度
 #define		TIME_OVER_TIME				(2000)		// 超时时间 2 秒

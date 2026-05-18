@@ -2,21 +2,41 @@
  * @file    sn74hc21d.c
  * @brief   SN74HC21D half-bridge driver for microcurrent energy output
  *
- * Architecture (matches Version_2.1 reference):
- *   EPWM2(P00) and EPWM3(P06) always running at 1645Hz carrier.
+ * Architecture:
+ *   EPWM2(P00) and EPWM3(P06) running at configurable carrier frequency.
  *   GPIO enables (P12/P40/P10) select which half-bridge is active.
  *   CCP1B(P07) duty controls supply voltage -> output amplitude.
- *   TMR0 ISR ramps CCP1B duty 0->peak->0, then toggles half-bridge.
+ *   TMR0 ISR steps through sine table, then toggles half-bridge.
+ *
+ * Supports 2 output modes with different carrier frequencies and timing.
  */
 
 #include "sn74hc21d.h"
 #include "epwm.h"
 
 /* =========================================================================
- * Constants
+ * Mode configuration table
  * ========================================================================= */
-#define EPWM_CARRIER_FREQ   100     /* EPWM carrier (Hz) */
-#define TMR0_RELOAD         24000   /* ~8ms per step at Pclk=3MHz, 512ms/half-wave */
+static const OutputModeConfig g_mode_table[OUTPUT_MODE_COUNT] = {
+    /* Mode 1: 100Hz carrier, ~1Hz full-wave output */
+    {
+        .epwm_carrier_freq = 100,
+        .epwm4_freq        = 200,
+        .tmr0_reload       = 24000,    /* ~8ms/step, 512ms/half-wave */
+        .epwm2_duty        = 48,
+        .epwm3_duty        = 52,
+        .epwm4_duty        = 20
+    },
+    /* Mode 2: 200Hz carrier, ~2Hz full-wave output */
+    {
+        .epwm_carrier_freq = 200,
+        .epwm4_freq        = 400,
+        .tmr0_reload       = 12000,    /* ~4ms/step, 256ms/half-wave */
+        .epwm2_duty        = 48,
+        .epwm3_duty        = 52,
+        .epwm4_duty        = 20
+    }
+};
 
 /* =========================================================================
  * Sine table: 64 points, half-sine (0..PI), values 0~255
@@ -41,10 +61,17 @@ static volatile uint8_t  g_running       = 0;
 static volatile uint8_t  g_channel       = 0;   /* 0=upper(A), 1=lower(B) */
 static volatile uint16_t g_sine_idx      = 0;    /* Current sine step 0~63 */
 static volatile uint8_t  g_gear          = 0;    /* Gear 0~100 */
+static volatile uint8_t  g_mode          = OUTPUT_MODE_DEFAULT;
 
 /* =========================================================================
  * Internal helpers
  * ========================================================================= */
+
+/** Get pointer to current mode config. */
+static const OutputModeConfig* GetModeConfig(void)
+{
+    return &g_mode_table[g_mode];
+}
 
 /** Set P07 (CCP1B) duty from sine table index, scaled by gear. */
 static void SetSineDuty(uint16_t sine_idx)
@@ -76,6 +103,22 @@ static void SelectB(void)
     GPIO_SetPin(GPIO1, GPIO_PIN_0_MSK);       /* ION_ENAB = 1 */
 }
 
+/** Configure EPWM channels for current mode. */
+static void ConfigureEPWM(void)
+{
+    const OutputModeConfig *cfg = GetModeConfig();
+    INT32U freq[6];
+    INT8U  div[6];
+    uint8_t i;
+
+    for (i = 0; i < 6; i++) { freq[i] = cfg->epwm_carrier_freq; div[i] = 1; }
+    freq[4] = cfg->epwm4_freq;
+    EPWM_Config_Independent_Mode(EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK, freq, div);
+    EPWM_ConfigChannelSymDutyScale(EPWM2, cfg->epwm2_duty);
+    EPWM_ConfigChannelSymDutyScale(EPWM3, cfg->epwm3_duty);
+    EPWM_ConfigChannelSymDutyScale(EPWM4, cfg->epwm4_duty);
+}
+
 /* =========================================================================
  * Public API
  * ========================================================================= */
@@ -100,18 +143,8 @@ void SN74HC21D_Init(void)
     SYS_SET_IOCFG(IOP06CFG, SYS_IOCFG_P06_EPWM3);  /* P06 -> EPWM3 -> HC21 pin 10 (upper) */
     SYS_SET_IOCFG(IOP31CFG, SYS_IOCFG_P31_EPWM4);  /* P31 -> EPWM4 -> HC21 pins 2,12 duty ctrl */
 
-    /* Configure EPWM2 and EPWM3 at carrier frequency */
-    {
-        INT32U freq[6];
-        INT8U  div[6];
-        uint8_t i;
-        for (i = 0; i < 6; i++) { freq[i] = EPWM_CARRIER_FREQ; div[i] = 1; }
-        freq[4] = EPWM_CARRIER_FREQ * 2; /* EPWM4 at 2x frequency for duty modulation */
-        EPWM_Config_Independent_Mode(EPWM_CH_2_MSK | EPWM_CH_3_MSK | EPWM_CH_4_MSK, freq, div);
-        EPWM_ConfigChannelSymDutyScale(EPWM2, 48);
-        EPWM_ConfigChannelSymDutyScale(EPWM3, 52);
-        EPWM_ConfigChannelSymDutyScale(EPWM4, 20);
-    }
+    /* Configure EPWM for default mode */
+    ConfigureEPWM();
 
     /* Start EPWM2/3 immediately - match reference code pattern */
     EPWM_ClearDownCmpIntFlag(EPWM2);
@@ -138,15 +171,20 @@ void SN74HC21D_Init(void)
 
     g_running = 0;
     g_gear = 0;
+    g_mode = OUTPUT_MODE_DEFAULT;
 }
 
 void SN74HC21D_EnergyStart(uint8_t gear)
 {
+    const OutputModeConfig *cfg;
+
     if (gear > 0) {
         if (gear > 100) gear = 100;
         g_gear = gear;
     }
     if (g_gear == 0) g_gear = 50;
+
+    cfg = GetModeConfig();
 
     g_sine_idx = 0;
     g_channel = 0;
@@ -155,7 +193,7 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_CCP1B);
     CCP_Start(CCP1);
     CCP_EnableRun(CCP1);
-    SetSineDuty(g_sine_idx);  /* Set initial duty to current energy level */
+    SetSineDuty(g_sine_idx);
 
     /* Start EPWM2 and EPWM3 - they stay running forever */
     EPWM_ClearDownCmpIntFlag(EPWM2);
@@ -178,7 +216,7 @@ void SN74HC21D_EnergyStart(uint8_t gear)
     TMR_ConfigClk(TMR0, TMR_CLK_SEL_APB, TMR_CLK_DIV_1);
     TMR_ConfigRunMode(TMR0, TMR_COUNT_PERIOD_MODE, TMR_BIT_32_MODE);
     TMR_DisableOneShotMode(TMR0);
-    TMR_SetPeriod(TMR0, TMR0_RELOAD);
+    TMR_SetPeriod(TMR0, cfg->tmr0_reload);
     TMR_ClearOverflowIntFlag(TMR0);
     TMR_EnableOverflowInt(TMR0);
     NVIC_EnableIRQ(TMR0_IRQn);
@@ -240,6 +278,37 @@ void SN74HC21D_EnergySetGear(uint8_t gear)
 
     /* Normal gear adjustment while running */
     g_gear = gear;
+}
+
+void SN74HC21D_SetMode(uint8_t mode)
+{
+    uint8_t was_running;
+
+    if (mode >= OUTPUT_MODE_COUNT) return;
+    if (mode == g_mode) return;
+
+    was_running = g_running;
+
+    /* Stop output if running */
+    if (was_running) {
+        SN74HC21D_EnergyStop();
+    }
+
+    /* Update mode */
+    g_mode = mode;
+
+    /* Reconfigure EPWM with new frequency */
+    ConfigureEPWM();
+
+    /* Restart if was running */
+    if (was_running) {
+        SN74HC21D_EnergyStart(g_gear);
+    }
+}
+
+uint8_t SN74HC21D_GetMode(void)
+{
+    return g_mode;
 }
 
 /* TMR0 ISR: step through sine table, toggle half-bridge at end */
