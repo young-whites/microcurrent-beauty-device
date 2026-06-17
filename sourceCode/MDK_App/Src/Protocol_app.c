@@ -2,6 +2,7 @@
 #include "bsp_pid.h"
 #include "bsp_hard.h"
 #include "sn74hc21d.h"
+#include "bsp_water.h"
 
 
 
@@ -124,15 +125,22 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				if (Flag.WorkStart == 1)
 				{
-					/* Enable cooling: start CCP0 PWM + PID + fan */
-					CCP_Start(CCP0);
-					CCP_EnableRun(CCP0);
-					PID_SetEnabled(1);
-					HeatDissipation_On();
+					/* Check water level before starting cooling */
+					if (WaterLevel_IsOK())
+					{
+						CCP_Start(CCP0);
+						CCP_EnableRun(CCP0);
+						PID_SetEnabled(1);
+						HeatDissipation_On();
+					}
+					else
+					{
+						/* Water level insufficient, reject start command */
+						Flag.WorkStart = 0;
+					}
 				}
 				else
 				{
-					/* Disable cooling + fan */
 					CCP_Stop(CCP0);
 					PID_SetEnabled(0);
 					Cooling_Off();
