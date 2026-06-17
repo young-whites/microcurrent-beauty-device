@@ -70,6 +70,16 @@ void APP_Report(INT8U func, INT8U len, INT8U para[])
 	
 	APP_SendFrame(&ReptFrame);
 }
+
+/*
+ * Water level status report
+ * Report to APP when water level is insufficient
+ * Frame format: func=0x07, para[0]=0(insufficient)/1(normal)
+ */
+void APP_ReportWaterLevel(uint8_t water_ok)
+{
+	APP_Report(FRAME_FUNC_WATER_LEVEL, 1, &water_ok);
+}
 /*****************************************************************************
 * 功能:		回应一帧数据给APP
 *****************************************************************************/

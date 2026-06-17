@@ -54,6 +54,8 @@ int main(void)
 	Energy_Init();
 	/* SN74HC21D half-bridge driver init (EPWM2/3 + GPIO) */
 	SN74HC21D_Init();
+	/* Water level detection init (P43) */
+	WaterLevel_Init();
 	/**********************以上配置为系统芯片与相关外设的初始化相关*+.0**************************************/
 	/* 系统参数初始化 */
 	/* Debug UART0 init for temperature data output */
@@ -66,6 +68,7 @@ int main(void)
 		UART1_SendScan();						// UART1 发送扫描
 		UART1_RecvScan();						// UART1 接收扫描
 		ADC_DrvScan();							// Trigger ADC scan for NTC temperature sampling
+		WaterLevel_Scan();					// Water level debounce scan
 		
 		SystemWorkStatusCheck();		
 		if (Flag.update == 1)

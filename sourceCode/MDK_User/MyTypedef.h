@@ -32,6 +32,8 @@ typedef struct
     uint8_t     cntFlagB;        // 与门B半桥
 	uint8_t		BluetoothConnect;// 蓝牙连接状态
 	uint8_t		EnergyOutput;   // 微电流能量输出使能标志
+	uint8_t		WaterLevelOK;      // 1=water level OK (low), 0=water level low (high)
+	uint8_t		WaterLevelReport;  // Water level low report enable flag
 }  Flag_StructType;
 extern   Flag_StructType Flag;
 

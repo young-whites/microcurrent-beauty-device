@@ -1,7 +1,8 @@
 #include "Timing.h"
 #include "bsp_pid.h"
-#include "debug_uart.h"
 #include "bsp_hard.h"
+#include "bsp_water.h"
+#include "debug_uart.h"
 #include "adc.h"
 
 
@@ -125,7 +126,11 @@ void Timing1_500ms(void)
 
 void Timing1_1s(void)
 {
-
+	/* Water level low report: send every 1 second when water level is insufficient */
+	if (Flag.WaterLevelReport)
+	{
+		APP_ReportWaterLevel(WaterLevel_IsOK());
+	}
 }
 //----------------------------------------------------------------------------
 
