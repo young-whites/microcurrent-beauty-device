@@ -122,15 +122,6 @@ void PID_Update(void)
         return;
     }
 
-    /* Full power cooling when actual temp above target */
-    if (g_cooling_pid.current_temp > g_cooling_pid.target_temp)
-    {
-        g_cooling_pid.output = PID_OUTPUT_MAX;
-        g_cooling_pid.integral = 0;
-        g_cooling_pid.prev_error = 0;
-        return;
-    }
-
     /* Calculate error: positive = need more cooling */
     error = g_cooling_pid.current_temp - g_cooling_pid.target_temp;
 
