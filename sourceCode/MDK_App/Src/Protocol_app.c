@@ -237,9 +237,9 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case SET_COOLING_LEVEL:
 				{
 					vaildCmd = 1;
-					/* para[0]: target temperature in degrees (-2~20, two's complement for negatives) */
+					/* para[0]: target temperature in degrees (-1~20, two's complement for negatives) */
 					int8_t temp_deg = (int8_t)Frame->list.para[0];
-					PID_SetTarget((int16_t)temp_deg * 10); /* Convert to 0.1C units */
+					PID_SetTarget((int16_t)(temp_deg - 4) * 10); /* Host offset: internal target = host - 4C */
 				}break;
 
 				case FRAME_FUNC_ENERGY_SET:

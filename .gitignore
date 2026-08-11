@@ -110,3 +110,4 @@ sourceCode/MDK_Project/Objects/systemconfig.crf
 sourceCode/MDK_Project/Objects/timer.crf
 sourceCode/MDK_Project/Objects/timing.crf
 sourceCode/MDK_Project/Objects/usart.crf
+*.bak*
