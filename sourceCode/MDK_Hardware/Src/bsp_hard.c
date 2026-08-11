@@ -40,7 +40,7 @@ void HeatDissipation_Off(void)
 
 
 /**
-  * @brief  Cooling pad GPIO init (P30 as CCP0A for PWM)
+  * @brief  Cooling pad GPIO init (P30 as simple on/off control)
   * @param  None
   * @retval None
   */
@@ -53,7 +53,7 @@ void Cold_Enable_GPIO_Config(void)
 
 /**
   * @brief  Initialize cooling subsystem
-  *         Configures CCP0 for PWM output on P30 (CCP0A)
+  *         Configures P30 as GPIO for simple on/off control
   */
 void Cooling_Init(void)
 {
