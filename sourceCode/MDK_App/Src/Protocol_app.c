@@ -289,7 +289,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					vaildCmd = 1;
 					noBeep = 1;
 					int16_t report_temp = g_cooling_pid.current_temp;
-					if (report_temp < 0) report_temp = -1;  /* Below 0C: report -1 (0xFFFF) */
+					if (report_temp < 20) report_temp = -1;  /* Below 2C: report -1 (0xFFFF) */
 					Frame->list.len += 2;
 					Frame->list.para[0] = (INT8S)(report_temp >> 8);
 					Frame->list.para[1] = (INT8U)(report_temp & 0xFF);
