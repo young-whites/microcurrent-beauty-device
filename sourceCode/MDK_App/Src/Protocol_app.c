@@ -299,6 +299,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					break;
 			}
 		}
+		break;
 		
 
 		default:	break;
