@@ -46,7 +46,9 @@ void HeatDissipation_Off(void)
   */
 void Cold_Enable_GPIO_Config(void)
 {
-    SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_CCP0A);
+    SYS_SET_IOCFG(IOP30CFG, SYS_IOCFG_P30_GPIO);
+    GPIO_CONFIG_IO_MODE(GPIO3, GPIO_PIN_0, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_ResetPin(GPIO3, GPIO_PIN_0_MSK);  /* Default off */
 }
 
 /**
@@ -56,13 +58,7 @@ void Cold_Enable_GPIO_Config(void)
 void Cooling_Init(void)
 {
     Cold_Enable_GPIO_Config();
-
-    /* Configure CCP0 for cooling PWM at 1kHz */
-    SYS_EnablePeripheralClk(SYS_CLK_CCP_MSK);
-    CCP_ConfigCLK(CCP0, CCP_CLK_DIV_1, CCP_RELOAD_CCPLOAD, 3000);  // Pclk=3MHz/3000=1kHz
-    CCP_EnablePWMMode(CCP0);
-    CCP_ConfigDutyScale(CCP0, CCPxA, 0);   // Start at 0%
-    CCP_DisableReverseOutput(CCP0, CCPxA);
+    /* P30 is now GPIO, no CCP0 PWM needed */
 }
 
 /**
@@ -71,11 +67,10 @@ void Cooling_Init(void)
   */
 void Cooling_SetPower(uint8_t duty)
 {
-    uint16_t period, compare;
-    if (duty > 100) duty = 100;
-    period = CCP_ReadLoad(CCP0);
-    compare = (uint32_t)period * duty / 100;
-    CCP_ConfigCompare(CCP0, CCPxA, compare);
+    if (duty > 0)
+        GPIO_SetPin(GPIO3, GPIO_PIN_0_MSK);    /* P30 high = cooling on */
+    else
+        GPIO_ResetPin(GPIO3, GPIO_PIN_0_MSK);  /* P30 low = cooling off */
 }
 
 /**
@@ -83,8 +78,7 @@ void Cooling_SetPower(uint8_t duty)
   */
 void Cooling_Off(void)
 {
-    Cooling_SetPower(0);
-    CCP_Stop(CCP0);    /* Stop CCP0 module */
+    GPIO_ResetPin(GPIO3, GPIO_PIN_0_MSK);  /* P30 low = cooling off */
 }
 
 

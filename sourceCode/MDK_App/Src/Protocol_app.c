@@ -129,8 +129,6 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					/* Check water level before starting cooling */
 					if (WaterLevel_IsOK())
 					{
-						CCP_Start(CCP0);
-						CCP_EnableRun(CCP0);
 						PID_SetEnabled(1);
 						HeatDissipation_On();
 					}
@@ -142,7 +140,6 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				}
 				else
 				{
-					CCP_Stop(CCP0);
 					PID_SetEnabled(0);
 					Cooling_Off();
 					HeatDissipation_Off();
@@ -213,7 +210,6 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 				/* Stop cooling + fan */
 				Flag.WorkStart = 0;
-				CCP_Stop(CCP0);
 				PID_SetEnabled(0);
 				Cooling_Off();
 				HeatDissipation_Off();
