@@ -20,6 +20,13 @@
 #define NTC_TABLE_SIZE          128     // -2~125C
 #define NTC_TABLE_START_C       -2      // Table starts at -2C
 
+/* NTC temperature offset compensation (unit: 0.1C)
+ * Adjust this value to calibrate per unit.
+ * Positive value = subtract from reading (sensor reads high)
+ * Negative value = add to reading (sensor reads low)
+ */
+#define NTC_TEMP_OFFSET         35      // +3.5C offset (sensor reads 3.5C high)
+
 /*
  * NTC lookup table: 10K NTC (B=3950) with 10K pull-up, 3.3V ref, 12-bit ADC
  * Index = temperature in Celsius (0~50)

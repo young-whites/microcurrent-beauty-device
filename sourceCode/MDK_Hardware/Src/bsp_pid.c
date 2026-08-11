@@ -69,11 +69,11 @@ int16_t NTC_ADC_ToTemp(uint32_t adc_val)
     /* Clamp: descending table - high ADC = cold, low ADC = hot */
     if (adc >= NTC_Table[0])
     {
-        return NTC_TABLE_START_C * 10;           /* Colder than 0C */
+        return NTC_TABLE_START_C * 10 - NTC_TEMP_OFFSET; /* Colder than 0C */
     }
     if (adc <= NTC_Table[NTC_TABLE_SIZE - 1])
     {
-        return (NTC_TABLE_START_C + NTC_TABLE_SIZE - 1) * 10; /* Hotter than 125C */
+        return (NTC_TABLE_START_C + NTC_TABLE_SIZE - 1) * 10 - NTC_TEMP_OFFSET; /* Hotter than 125C */
     }
 
     /* Forward search: descending table, ADC decreases as temp rises */
@@ -83,12 +83,12 @@ int16_t NTC_ADC_ToTemp(uint32_t adc_val)
         {
             int16_t adc_diff = NTC_Table[temp_c] - NTC_Table[temp_c + 1];
             int16_t adc_offs = NTC_Table[temp_c] - adc;
-            return (NTC_TABLE_START_C + temp_c) * 10 + (adc_offs * 10) / adc_diff;
+            return (NTC_TABLE_START_C + temp_c) * 10 + (adc_offs * 10) / adc_diff - NTC_TEMP_OFFSET;
         }
     }
 
     /* Fallback (should not reach here) */
-    return (NTC_TABLE_START_C + NTC_TABLE_SIZE - 1) * 10;
+    return (NTC_TABLE_START_C + NTC_TABLE_SIZE - 1) * 10 - NTC_TEMP_OFFSET;
 }
 
 /**
