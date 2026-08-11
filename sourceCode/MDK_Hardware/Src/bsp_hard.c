@@ -2,40 +2,40 @@
 
 
 /**
-  * @brief  Heat dissipation fan + pump GPIO init (P17)
+  * @brief  Heat dissipation fan + pump GPIO init (P25)
   * @param  None
   * @retval None
   */
 void HeatDissipation_GPIO_Config(void)
 {
-    /* P17 configured as GPIO */
-    SYS_SET_IOCFG(IOP17CFG, SYS_IOCFG_P17_GPIO);
+    /* P25 configured as GPIO */
+    SYS_SET_IOCFG(IOP25CFG, SYS_IOCFG_P25_GPIO);
 
     /* Push-pull output mode */
-    GPIO_CONFIG_IO_MODE(GPIO1, GPIO_PIN_7, GPIO_MODE_OUTPUT_PUSH_PULL);
+    GPIO_CONFIG_IO_MODE(GPIO2, GPIO_PIN_5, GPIO_MODE_OUTPUT_PUSH_PULL);
 
     /* Default off (low) -- safety first */
-    GPIO_ResetPin(GPIO1, GPIO_PIN_7_MSK);
+    GPIO_ResetPin(GPIO2, GPIO_PIN_5_MSK);
 }
 
 /**
-  * @brief  Turn on heat dissipation fan + pump (P17 high)
+  * @brief  Turn on heat dissipation fan + pump (P25 high)
   * @param  None
   * @retval None
   */
 void HeatDissipation_On(void)
 {
-    GPIO_SetPin(GPIO1, GPIO_PIN_7_MSK);
+    GPIO_SetPin(GPIO2, GPIO_PIN_5_MSK);
 }
 
 /**
-  * @brief  Turn off heat dissipation fan + pump (P17 low)
+  * @brief  Turn off heat dissipation fan + pump (P25 low)
   * @param  None
   * @retval None
   */
 void HeatDissipation_Off(void)
 {
-    GPIO_ResetPin(GPIO1, GPIO_PIN_7_MSK);
+    GPIO_ResetPin(GPIO2, GPIO_PIN_5_MSK);
 }
 
 
