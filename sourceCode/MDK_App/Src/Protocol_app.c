@@ -239,7 +239,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					vaildCmd = 1;
 					/* para[0]: target temperature in degrees (-1~20, two's complement for negatives) */
 					int8_t temp_deg = (int8_t)Frame->list.para[0];
-					int16_t target = (temp_deg <= 0) ? (temp_deg - 4) * 10 : (int16_t)temp_deg * 10;
+					int16_t target = (temp_deg < 0) ? 0 : (int16_t)temp_deg * 10;
 					PID_SetTarget(target);
 				}break;
 
