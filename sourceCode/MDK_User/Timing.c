@@ -72,24 +72,33 @@ void Timing1_50ms(void)
 *****************************************************************************/
 void Timing1_100ms(void)
 {
-    /* Cooling pad: 1-second toggle (ON for 1s, OFF for 1s, repeat) */
     if (Flag.WorkStart && g_cooling_pid.enabled)
     {
         static uint8_t toggle_cnt = 0;
         static uint8_t cooling_on = 1;
 
-        PID_Update();  /* Read temperature only */
+        PID_Update();
 
-        if (++toggle_cnt >= 10)  /* 10 x 100ms = 1 second */
+        if (g_cooling_pid.target_temp <= 0)
         {
-            toggle_cnt = 0;
-            cooling_on = !cooling_on;
+            /* Target <= 0: 1-second ON/OFF toggle at full power */
+            if (++toggle_cnt >= 10)
+            {
+                toggle_cnt = 0;
+                cooling_on = !cooling_on;
+            }
+            if (cooling_on)
+                Cooling_SetPower(100);
+            else
+                Cooling_Off();
         }
-
-        if (cooling_on)
-            Cooling_SetPower(100);
         else
-            Cooling_Off();
+        {
+            /* Target > 0: PID regulates cooling pad duty */
+            toggle_cnt = 0;
+            cooling_on = 1;
+            Cooling_SetPower(PID_GetOutput());
+        }
     }
 }
 

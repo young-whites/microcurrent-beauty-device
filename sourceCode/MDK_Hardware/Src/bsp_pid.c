@@ -130,12 +130,41 @@ void PID_Update(void)
         g_low_temp_timer = 0;
     }
 
-    /* PID bypassed: toggle logic handled in Timing1_100ms() */
     if (!g_cooling_pid.enabled)
     {
         g_cooling_pid.output = 0;
         g_cooling_pid.integral = 0;
+        return;
     }
+
+    /* Target <= 0: full power, PID handled by Timing toggle */
+    if (g_cooling_pid.target_temp <= 0)
+    {
+        g_cooling_pid.output = PID_OUTPUT_MAX;
+        g_cooling_pid.integral = 0;
+        g_cooling_pid.prev_error = 0;
+        return;
+    }
+
+    /* Target > 0: standard PID regulation */
+    error = g_cooling_pid.current_temp - g_cooling_pid.target_temp;
+
+    p_term = (int32_t)PID_KP * error;
+
+    g_cooling_pid.integral += error;
+    if (g_cooling_pid.integral >  PID_INTEGRAL_MAX) g_cooling_pid.integral =  PID_INTEGRAL_MAX;
+    if (g_cooling_pid.integral < -PID_INTEGRAL_MAX) g_cooling_pid.integral = -PID_INTEGRAL_MAX;
+    i_term = (int32_t)PID_KI * g_cooling_pid.integral;
+
+    d_term = (int32_t)PID_KD * (error - g_cooling_pid.prev_error);
+
+    output_raw = (p_term + i_term + d_term) / 100;
+
+    if (output_raw > PID_OUTPUT_MAX) output_raw = PID_OUTPUT_MAX;
+    if (output_raw < PID_OUTPUT_MIN) output_raw = PID_OUTPUT_MIN;
+
+    g_cooling_pid.prev_error = error;
+    g_cooling_pid.output = (uint8_t)output_raw;
 }
 
 /**
