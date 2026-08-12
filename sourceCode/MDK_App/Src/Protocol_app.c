@@ -130,7 +130,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					if (WaterLevel_IsOK())
 					{
 						PID_SetEnabled(1);
-						HeatDissipation_On();
+						HeatDissipation_On();  /* Fan always on during cooling */
 					}
 					else
 					{
