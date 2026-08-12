@@ -47,6 +47,13 @@ typedef struct {
 
 extern PID_Controller g_cooling_pid;
 
+/* Delay timer for low temperature display */
+#define LOW_TEMP_THRESHOLD      20      /* 2.0C threshold (unit: 0.1C) */
+#define LOW_TEMP_DELAY_SEC      60      /* Delay before showing -1 (seconds) */
+
+extern uint16_t g_low_temp_timer;       /* Countdown timer for low temp display (unit: 100ms ticks) */
+extern uint8_t  g_low_temp_active;      /* Flag: low temp delay is active */
+
 void PID_Init(void);
 void PID_SetTarget(int16_t target_temp);
 int16_t NTC_ADC_ToTemp(uint32_t adc_val);

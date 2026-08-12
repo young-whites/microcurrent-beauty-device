@@ -3,6 +3,9 @@
 
 PID_Controller g_cooling_pid;
 
+uint16_t g_low_temp_timer = 0;
+uint8_t  g_low_temp_active = 0;
+
 /*
  * NTC lookup table: 10K NTC (B=3950), 10K pull-up, 3.3V, 12-bit ADC
  * Index = temperature in Celsius (0~125)
@@ -106,6 +109,27 @@ void PID_Update(void)
     uint32_t adc_val = ADC_Read(NTC_ADC_CHANNEL);
     g_cooling_pid.current_temp = NTC_ADC_ToTemp(adc_val);
 
+    /* Manage low temperature display timer */
+    if (g_cooling_pid.current_temp < LOW_TEMP_THRESHOLD)
+    {
+        if (!g_low_temp_active)
+        {
+            /* First time reaching low temp: start delay timer */
+            g_low_temp_active = 1;
+            g_low_temp_timer = LOW_TEMP_DELAY_SEC * 10;  /* Convert seconds to 100ms ticks */
+        }
+        else if (g_low_temp_timer > 0)
+        {
+            g_low_temp_timer--;
+        }
+    }
+    else
+    {
+        /* Temperature above threshold: reset timer */
+        g_low_temp_active = 0;
+        g_low_temp_timer = 0;
+    }
+
     if (!g_cooling_pid.enabled)
     {
         g_cooling_pid.output = 0;
@@ -113,49 +137,36 @@ void PID_Update(void)
         return;
     }
 
-    /* Full power when target below 0C, PID not used */
-    if (g_cooling_pid.target_temp < 0)
-    {
-        g_cooling_pid.output = PID_OUTPUT_MAX;
-        g_cooling_pid.integral = 0;
-        g_cooling_pid.prev_error = 0;
-        return;
-    }
-
-    /* Full power cooling when actual temp above target */
-    if (g_cooling_pid.current_temp > g_cooling_pid.target_temp)
-    {
-        g_cooling_pid.output = PID_OUTPUT_MAX;
-        /* Do NOT reset integral/prev_error here - PID takes over smoothly when temp reaches target */
-        return;
-    }
-
-    /* Calculate error: positive = need more cooling */
+    /* Calculate error: positive means below target (need more cooling) */
     error = g_cooling_pid.current_temp - g_cooling_pid.target_temp;
 
-    /* Proportional term */
-    p_term = (int32_t)error * PID_KP / 100;
+    if (error > 0)
+    {
+        /* Below target: full power for rapid cooling, reset accumulators */
+        g_cooling_pid.output   = PID_OUTPUT_MAX;
+        g_cooling_pid.integral = 0;
+        g_cooling_pid.prev_error = 0;
+    }
+    else
+    {
+        /* At or above target: standard PID regulation */
+        p_term = (int32_t)PID_KP * error;
 
-    /* Integral term with anti-windup */
-    g_cooling_pid.integral += error;
-    if (g_cooling_pid.integral > PID_INTEGRAL_MAX)
-        g_cooling_pid.integral = PID_INTEGRAL_MAX;
-    if (g_cooling_pid.integral < -PID_INTEGRAL_MAX)
-        g_cooling_pid.integral = -PID_INTEGRAL_MAX;
-    i_term = g_cooling_pid.integral * PID_KI / 100;
+        g_cooling_pid.integral += error;
+        if (g_cooling_pid.integral >  PID_INTEGRAL_MAX) g_cooling_pid.integral =  PID_INTEGRAL_MAX;
+        if (g_cooling_pid.integral < -PID_INTEGRAL_MAX) g_cooling_pid.integral = -PID_INTEGRAL_MAX;
+        i_term = (int32_t)PID_KI * g_cooling_pid.integral;
 
-    /* Derivative term */
-    d_term = (int32_t)(error - g_cooling_pid.prev_error) * PID_KD / 100;
-    g_cooling_pid.prev_error = error;
+        d_term = (int32_t)PID_KD * (error - g_cooling_pid.prev_error);
 
-    /* Sum output */
-    output_raw = p_term + i_term + d_term;
+        output_raw = (p_term + i_term + d_term) / 100;
 
-    /* Clamp output */
-    if (output_raw > PID_OUTPUT_MAX) output_raw = PID_OUTPUT_MAX;
-    if (output_raw < PID_OUTPUT_MIN) output_raw = PID_OUTPUT_MIN;
+        if (output_raw > PID_OUTPUT_MAX) output_raw = PID_OUTPUT_MAX;
+        if (output_raw < PID_OUTPUT_MIN) output_raw = PID_OUTPUT_MIN;
 
-    g_cooling_pid.output = (uint8_t)output_raw;
+        g_cooling_pid.prev_error = error;
+        g_cooling_pid.output = (uint8_t)output_raw;
+    }
 }
 
 /**
@@ -163,6 +174,12 @@ void PID_Update(void)
   */
 void PID_SetEnabled(uint8_t enable)
 {
+    if (g_cooling_pid.enabled && !enable)
+    {
+        /* Cooling stopped: reset low temp delay timer */
+        g_low_temp_timer = 0;
+        g_low_temp_active = 0;
+    }
     g_cooling_pid.enabled = enable;
     if (!enable)
     {
