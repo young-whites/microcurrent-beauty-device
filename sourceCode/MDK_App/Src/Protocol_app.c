@@ -236,6 +236,11 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 					/* para[0]: target temperature in degrees (-1~20, two's complement for negatives) */
 					int8_t temp_deg = (int8_t)Frame->list.para[0];
 					int16_t target = (temp_deg < 0) ? 0 : (int16_t)temp_deg * 10;
+					/* When set temp is in 3~5C range, PID targets 3C directly.
+					 * NTC reads lower than external surface; targeting 3C
+					 * brings external temp to ~5C. */
+					if (target >= 30 && target <= 50)
+						target = 30;
 					PID_SetTarget(target);
 				}break;
 
