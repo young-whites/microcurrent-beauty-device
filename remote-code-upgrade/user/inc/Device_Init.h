@@ -1,4 +1,4 @@
-#include "cms32f033.h"
+#include "work.h"
 
 #ifndef __Device_Init_H
 #define __Device_Init_H
