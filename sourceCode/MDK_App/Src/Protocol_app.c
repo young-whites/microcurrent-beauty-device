@@ -98,7 +98,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 {
 	/*定义一个判断命令有效的标志，如果成功进入指令就让valid置1，否则就不变*/
 	INT8U	vaildCmd= 0;
-	INT8U	noBeep = 0;
+	INT8U	shouldBeep = 0;	/* Only beep for specific commands */
 
 	/*校验设备地址*/
 	if((Frame->list.idH != DEVICE_ID_H) || (Frame->list.idL != DEVICE_ID_L))	return;	
@@ -122,6 +122,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			case FRAME_FUNC_RUN:
 			{
 				vaildCmd = 1;
+				shouldBeep = 1;	/* 制冷开启/关闭 */
 				Flag.WorkStart = Frame->list.para[0];
 
 				if (Flag.WorkStart == 1)
@@ -181,6 +182,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			case FRAME_FUNC_ENERGY_RUN:
 			{
 				vaildCmd = 1;
+				shouldBeep = 1;	/* 电流输出开启/关闭 */
 				Flag.EnergyOutput = Frame->list.para[0];
 
 				if (Flag.EnergyOutput == 1)
@@ -202,6 +204,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 			case FRAME_FUNC_TOTAL_STOP:
 			{
 				vaildCmd = 1;
+				shouldBeep = 1;	/* 总停止 */
 
 				/* Stop energy output */
 				Flag.EnergyOutput = 0;
@@ -233,6 +236,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case SET_COOLING_LEVEL:
 				{
 					vaildCmd = 1;
+					shouldBeep = 1;	/* 设置温度 */
 					/* para[0]: target temperature in degrees (-1~20, two's complement for negatives) */
 					int8_t temp_deg = (int8_t)Frame->list.para[0];
 					int16_t target = (temp_deg < 0) ? 0 : (int16_t)temp_deg * 10;
@@ -288,7 +292,6 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 				case 0x41:
 				{
 					vaildCmd = 1;
-					noBeep = 1;
 					int16_t report_temp = g_cooling_pid.current_temp;
 
 					if (report_temp < LOW_TEMP_THRESHOLD)
@@ -325,7 +328,7 @@ void APP_DecodeCmd(AppFrameDef *Frame)
 
 	if(vaildCmd)
 	{
-		if(!noBeep)  BEEP_ShortPress();
+		if(shouldBeep)  BEEP_ShortPress();
 		LED_Blink(LED_Name_MessageSuccessful,1,0,0);
 		APP_RespFrame(Frame,FRAME_STATE_ACK);		// 正常的回应
 	}
