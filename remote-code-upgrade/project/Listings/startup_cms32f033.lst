@@ -300,11 +300,11 @@ ARM Macro Assembler    Page 5
               00000800 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
-ork --depend=.\objects\startup_cms32f033.d -o.\objects\startup_cms32f033.o -I.\
-RTE\_Target_1 -IC:\Users\zxli\AppData\Local\Arm\Packs\Cmsemicon\CMS32-Series\1.
-0.1\Device\CMS32F033\Include -IC:\Keil_v5\ARM\CMSIS\Include --predefine="__UVIS
-ION_VERSION SETA 528" --predefine="CMS32F033 SETA 1" --list=.\listings\startup_
-cms32f033.lst ..\code\source\0_global_s\startup_cms32f033.s
+ork --depend=.\objects\startup_cms32f033.d -o.\objects\startup_cms32f033.o -ID:
+\Users\teati\AppData\Local\Arm\Packs\Cmsemicon\CMS32-Series\1.0.3\Device\CMS32F
+033\Include --predefine="__UVISION_VERSION SETA 538" --predefine="CMS32F033 SET
+A 1" --list=.\listings\startup_cms32f033.lst ..\code\source\0_global_s\startup_
+cms32f033.s
 
 
 

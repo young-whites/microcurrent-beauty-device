@@ -40,8 +40,8 @@ void delay_us(u32 nus)
 		temp=SysTick->CTRL;
 	}
 	while(temp&0x01&&!(temp&(1<<16)));//�ȴ�ʱ�䵽��   
-	SysTick->CTRL=0x00;       //�رռ�����
-	SysTick->VAL =0X00;       //��ռ����� 
+	SysTick->CTRL=0x00;       
+	SysTick->VAL =0X00;      
 }
 
 void Dveice_Init(u32 SYSCLK) 
