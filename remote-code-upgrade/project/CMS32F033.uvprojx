@@ -576,11 +576,6 @@
               <FilePath>..\user\src\main.c</FilePath>
             </File>
             <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\key.c</FilePath>
-            </File>
-            <File>
               <FileName>isr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\src\isr.c</FilePath>
@@ -589,11 +584,6 @@
               <FileName>Device_Init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\src\Device_Init.c</FilePath>
-            </File>
-            <File>
-              <FileName>work.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\work.c</FilePath>
             </File>
             <File>
               <FileName>clock.c</FileName>
@@ -606,39 +596,9 @@
               <FilePath>..\user\src\gpioctl.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\bsp_timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\bsp_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>pid.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\pid.c</FilePath>
-            </File>
-            <File>
-              <FileName>battery.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\battery.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_usrt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\src\bsp_usrt.c</FilePath>
-            </File>
-            <File>
-              <FileName>ch455.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\ch455.c</FilePath>
-            </File>
-            <File>
-              <FileName>TM1639.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\src\TM1639.c</FilePath>
             </File>
             <File>
               <FileName>Ymode.c</FileName>

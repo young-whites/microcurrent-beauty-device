@@ -1,212 +1,52 @@
 #include "Device_Init.h"
 
-#include "key.h"
-#include "gpioctl.h"
-#include "work.h"
-#include "app_epwm.h"
-#include "app_adc1.h"
-#include "bsp_timer.h"    
-#include "ch455.h"    
-#include "system.h"    
-#include "bsp_uart.h"    
-#include "string.h"    
-#include "clock.h"    
-#include "uart.h"
+#include "system.h"
 
 
- /*delayº¯Êý³õÊ¼»¯*/
-static u8  fac_us=0;//usÑÓÊ±±¶³ËÊý
-static u16 fac_ms=0;//msÑÓÊ±±¶³ËÊý
+ /*delayï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½*/
+static u8  fac_us=0;//usï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+static u16 fac_ms=0;//msï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-//ÑÓÊ±nms
-//×¢ÒânmsµÄ·¶Î§
-//SysTick->LOADÎª24Î»¼Ä´æÆ÷,ËùÒÔ,×î´óÑÓÊ±Îª:
+//ï¿½ï¿½Ê±nms
+//×¢ï¿½ï¿½nmsï¿½Ä·ï¿½Î§
+//SysTick->LOADÎª24Î»ï¿½Ä´ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½Ê±Îª:
 //nms<=0xffffff*8*1000/SYSCLK
-//SYSCLKµ¥Î»ÎªHz,nmsµ¥Î»Îªms
-//¶Ô72MÌõ¼þÏÂ,nms<=1864 
+//SYSCLKï¿½ï¿½Î»ÎªHz,nmsï¿½ï¿½Î»Îªms
+//ï¿½ï¿½72Mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,nms<=1864 
 void delay_ms(u16 nms)
 {	 		  	  
 	u32 temp;		   
-	SysTick->LOAD=(u32)nms*fac_ms;//Ê±¼ä¼ÓÔØ(SysTick->LOADÎª24bit)
-	SysTick->VAL =0x00;           //Çå¿Õ¼ÆÊýÆ÷
-	SysTick->CTRL=0x01 ;          //¿ªÊ¼µ¹Êý  
+	SysTick->LOAD=(u32)nms*fac_ms;//Ê±ï¿½ï¿½ï¿½ï¿½ï¿½(SysTick->LOADÎª24bit)
+	SysTick->VAL =0x00;           //ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	SysTick->CTRL=0x01 ;          //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½  
 	do
 	{  
 		temp=SysTick->CTRL;
 	}
-	while(temp&0x01&&!(temp&(1<<16)));///µÈ´ýÊ±¼äµ½´ï 
-	SysTick->CTRL=0x00;       //¹Ø±Õ¼ÆÊýÆ÷
-	SysTick->VAL =0X00;       //Çå¿Õ¼ÆÊýÆ÷	  	    
+	while(temp&0x01&&!(temp&(1<<16)));///ï¿½È´ï¿½Ê±ï¿½äµ½ï¿½ï¿½ 
+	SysTick->CTRL=0x00;       //ï¿½Ø±Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	SysTick->VAL =0X00;       //ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½	  	    
 }   
-//ÑÓÊ±nus
-//nusÎªÒªÑÓÊ±µÄusÊý.			    								   
+//ï¿½ï¿½Ê±nus
+//nusÎªÒªï¿½ï¿½Ê±ï¿½ï¿½usï¿½ï¿½.			    								   
 void delay_us(u32 nus)
 {		
 	u32 temp;	    	 
-	SysTick->LOAD=nus*fac_us; //Ê±¼ä¼ÓÔØ	  		 
-	SysTick->VAL=0x00;        //Çå¿Õ¼ÆÊýÆ÷
-	SysTick->CTRL=0x01 ;      //¿ªÊ¼µ¹Êý  
+	SysTick->LOAD=nus*fac_us; //Ê±ï¿½ï¿½ï¿½ï¿½ï¿½	  		 
+	SysTick->VAL=0x00;        //ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	SysTick->CTRL=0x01 ;      //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½  
 	do
 	{
 		temp=SysTick->CTRL;
 	}
-	while(temp&0x01&&!(temp&(1<<16)));//µÈ´ýÊ±¼äµ½´ï   
-	SysTick->CTRL=0x00;       //¹Ø±Õ¼ÆÊýÆ÷
-	SysTick->VAL =0X00;       //Çå¿Õ¼ÆÊýÆ÷ 
+	while(temp&0x01&&!(temp&(1<<16)));//ï¿½È´ï¿½Ê±ï¿½äµ½ï¿½ï¿½   
+	SysTick->CTRL=0x00;       //ï¿½Ø±Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	SysTick->VAL =0X00;       //ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½ 
 }
 
 void Dveice_Init(u32 SYSCLK) 
 {
-	/*delayº¯Êý*/
-	//³õÊ¼»¯ÑÓ³Ùº¯Êý
-	//SYSTICKµÄÊ±ÖÓ¹Ì¶¨ÎªHCLKÊ±ÖÓµÄ1/8
-	//SYSCLK:ÏµÍ³Ê±ÖÓ
-	SysTick->CTRL&=0xfffffffb;//bit2Çå¿Õ,Ñ¡ÔñÍâ²¿Ê±ÖÓ  HCLK/8
+	SysTick->CTRL&=0xfffffffb;
 	fac_us=SYSCLK/8;		    
 	fac_ms=(u16)fac_us*1000;
-}
-
-void MCU_TIM_Init(void)
-{
-
-}
-
-void SoftWarePara_Init(void)
-{
-
-}
-
-void SoftWarePara_Reset(void)
-{
-
-}
-
-void System_Device_Init(void) 
-{
-	gpio_init();//IO¿Ú³õÊ¼»¯
-	ADC_InitConfig();//ADC³õÊ¼»¯
- 	Timer0_init();
-	Timer1_init();//¶¨Ê±Æ÷³õÊ¼»¯
-	EPWM_OutPut_IndependentMode();//PWMÊä³öÅäÖÃ³õÊ¼»¯
-	UART_UART1_Config();
-	UART_ReceiveValueInit(&USART3_QueueBuf,UART_DATALENGTH);
-}
-
-void init_mode(void)
-{
-
-}
-
-
-
-void Power_Off(void)
-{
-	
-}
-
-void EPWM_OutPut_IndependentMode(void)
-{
-	/*
-	(1)ÉèÖÃEPWMÔËÐÐÄ£Ê½
-	*/
-	EPWM_ConfigRunMode   //( EPWM_COUNT_DOWN);// 		| 			/*ÏòÏÂ¼ÆÊýÄ£Ê½(±ßÑØ¶ÔÆë)*/
-	// 					 (EPWM_OCU_SYMMETRIC );	//|			/*¶Ô³ÆÄ£Ê½*/
-	// 					 (EPWM_WFG_INDEPENDENT ); // |			/*¶ÀÁ¢Ä£Ê½*/
-	 					 (EPWM_OC_INDEPENDENT);	//			/*¶ÀÁ¢Êä³öÄ£Ê½*/
- 
-	/*
-	(2)ÉèÖÃEPWMÊ±ÖÓÖÜÆÚ
-	*/
-	SYS_EnablePeripheralClk(SYS_CLK_EPWM_MSK);				/*¿ªÆôEPWMÊ±ÖÓ*/
-	
-	EPWM_ConfigChannelClk( EPWM0, EPWM_CLK_DIV_1);			/*ÉèÖÃEPWM0Ê±ÖÓÎªAPBÊ±ÖÓµÄ1·ÖÆµ*/
-	EPWM_ConfigChannelClk( EPWM1, EPWM_CLK_DIV_1);			/*ÉèÖÃEPWM1Ê±ÖÓÎªAPBÊ±ÖÓµÄ1·ÖÆµ*/
-	EPWM_ConfigChannelClk( EPWM2, EPWM_CLK_DIV_1);			/*ÉèÖÃEPWM2Ê±ÖÓÎªAPBÊ±ÖÓµÄ1·ÖÆµ*/
-	EPWM_ConfigChannelClk( EPWM3, EPWM_CLK_DIV_1);			/*ÉèÖÃEPWM3Ê±ÖÓÎªAPBÊ±ÖÓµÄ1·ÖÆµ*/
-	EPWM_ConfigChannelClk( EPWM4, EPWM_CLK_DIV_1);			/*ÉèÖÃEPWM4Ê±ÖÓÎªAPBÊ±ÖÓµÄ1·ÖÆµ*/
-	EPWM_ConfigChannelClk( EPWM5, EPWM_CLK_DIV_1);			/*ÉèÖÃEPWM5Ê±ÖÓÎªAPBÊ±ÖÓµÄ1·ÖÆµ*/
-
-	EPWM_ConfigChannelPeriod(EPWM0,  2400);					/*EPWM0Í¨µÀµÄÖÜÆÚ = 2400/Fepwm = 50us*/
-	EPWM_ConfigChannelPeriod(EPWM1,  2400);					/*EPWM1Í¨µÀµÄÖÜÆÚ = 2400/Fepwm = 50us*/
-	EPWM_ConfigChannelPeriod(EPWM2,  2400);					/*EPWM2Í¨µÀµÄÖÜÆÚ = 2400/Fepwm = 50us*/
-	EPWM_ConfigChannelPeriod(EPWM3,  2400);					/*EPWM3Í¨µÀµÄÖÜÆÚ = 2400/Fepwm = 50us*/
-	EPWM_ConfigChannelPeriod(EPWM4,  2400);					/*EPWM4Í¨µÀµÄÖÜÆÚ = 2400/Fepwm = 50us*/
-	EPWM_ConfigChannelPeriod(EPWM5,  2400);					/*EPWM5Í¨µÀµÄÖÜÆÚ = 2400/Fepwm = 50us*/
-
-	EPWM_ConfigChannelSymDuty(EPWM0, 0);					/*EPWM0Í¨µÀµÄÕ¼¿Õ±È = 0%       0*/
-	EPWM_ConfigChannelSymDuty(EPWM1, 0);					/*EPWM1Í¨µÀµÄÕ¼¿Õ±È = 20%    480*/
-	EPWM_ConfigChannelSymDuty(EPWM2, 960);					/*EPWM2Í¨µÀµÄÕ¼¿Õ±È = 40%    960*/
-	EPWM_ConfigChannelSymDuty(EPWM3, 1440);					/*EPWM3Í¨µÀµÄÕ¼¿Õ±È = 60%    1400*/	
-	EPWM_ConfigChannelSymDuty(EPWM4, 1920);					/*EPWM4Í¨µÀµÄÕ¼¿Õ±È = 80%    1920*/	
-	EPWM_ConfigChannelSymDuty(EPWM5, 2400);					/*EPWM5Í¨µÀµÄÕ¼¿Õ±È = 100%   2400*/	
-		
-	/*
-	(3)ÉèÖÃEPWM·´ÏòÊä³ö
-	*/
-	EPWM_DisableReverseOutput( EPWM_CH_0_MSK | EPWM_CH_1_MSK |
-							   EPWM_CH_2_MSK | EPWM_CH_3_MSK |
-							   EPWM_CH_4_MSK | EPWM_CH_5_MSK );				/*¹Ø±Õ·´ÏàÊä³ö*/
-
-	/*
-	(4)ÉèÖÃEPWM¼ÓÔØ·½Ê½
-	*/
-	EPWM_EnableAutoLoadMode(EPWM_CH_0_MSK | EPWM_CH_1_MSK |
-							EPWM_CH_2_MSK | EPWM_CH_3_MSK |
-							EPWM_CH_4_MSK | EPWM_CH_5_MSK);				/*ÉèÖÃÎª×Ô¶¯¼ÓÔØÄ£Ê½*/
-	EPWM_ConfigLoadAndIntMode(EPWM0, EPWM_EACH_PERIOD_ZERO);			
-	EPWM_ConfigLoadAndIntMode(EPWM1, EPWM_EACH_PERIOD_ZERO);
-	EPWM_ConfigLoadAndIntMode(EPWM2, EPWM_EACH_PERIOD_ZERO);
-	EPWM_ConfigLoadAndIntMode(EPWM3, EPWM_EACH_PERIOD_ZERO);
-	EPWM_ConfigLoadAndIntMode(EPWM4, EPWM_EACH_PERIOD_ZERO);
-	EPWM_ConfigLoadAndIntMode(EPWM5, EPWM_EACH_PERIOD_ZERO);			/*¼ÓÔØµãÉèÖÃÎªÃ¿¸öÖÜÆÚµãºÍÁãµã*/
-
-/*
-	(5)ÉèÖÃÖÐ¶Ï
-	*/
-	// EPWM_EnablePeriodInt( EPWM_CH_0_MSK);				/*¿ªÆôÖÜÆÚµãÖÐ¶Ï*/
-	// EPWM_EnableDownCmpInt( EPWM_CH_0_MSK);				/*¿ªÆôÏòÏÂ±È½ÏµãÖÐ¶Ï*/
-	// EPWM_EnableZeroInt( EPWM_CH_0_MSK);					/*¿ªÆôÁãµãÖÐ¶Ï*/
-	NVIC_EnableIRQ(EPWM_IRQn);
-	/*
-	(6)ÉèÖÃÓÅÏÈ¼¶
-	*/	
-	NVIC_SetPriority(EPWM_IRQn,3);					/*ÓÅÏÈ¼¶0~3£¬ 0×î¸ß¡¢3×îµÍ*/
-	
-	/*
-	(7)ÉèÖÃIO¿ÚÊä³ö
-	*/	
-	// SYS_SET_IOCFG(IOP12CFG, SYS_IOCFG_P01_EPWM0);		
-	SYS_SET_IOCFG(IOP10CFG, SYS_IOCFG_P10_EPWM1);	
-	// SYS_SET_IOCFG(IOP05CFG, SYS_IOCFG_P05_EPWM2);	
-	// SYS_SET_IOCFG(IOP06CFG, SYS_IOCFG_P06_EPWM3);	
-	// SYS_SET_IOCFG(IOP07CFG, SYS_IOCFG_P07_EPWM4);	
-	// SYS_SET_IOCFG(IOP21CFG, SYS_IOCFG_P21_EPWM5);	
-	
-	EPWM_EnableOutput(EPWM_CH_0_MSK | EPWM_CH_1_MSK |
-					  EPWM_CH_2_MSK | EPWM_CH_3_MSK |
-					  EPWM_CH_4_MSK | EPWM_CH_5_MSK );
-
-	/*
-	(8)¿ªÆôEPWM
-	*/		
-	EPWM_Start(EPWM_CH_0_MSK | EPWM_CH_1_MSK |
-			   EPWM_CH_2_MSK | EPWM_CH_3_MSK |
-			   EPWM_CH_4_MSK | EPWM_CH_5_MSK );
-	
-	
-	/*
-	(8)ÉèÖÃGPIOÊä³ö
-	*/
-	// SYS_SET_IOCFG(IOP12CFG, SYS_IOCFG_P12_GPIO);	
-	// GPIO_CONFIG_IO_MODE(GPIO1,GPIO_PIN_2,GPIO_MODE_OUTPUT);		/*Ö¸Ê¾ÖÜÆÚÖÐ¶Ï*/
-	// GPIO1->DO_f.P2 = 0;	
-	
-	// SYS_SET_IOCFG(IOP13CFG, SYS_IOCFG_P13_GPIO);	
-	// GPIO_CONFIG_IO_MODE(GPIO1,GPIO_PIN_3,GPIO_MODE_OUTPUT);		/*Ö¸Ê¾±È½ÏµãÖÐ¶Ï*/
-	// GPIO1->DO_f.P3 = 0;		
-	
-	// SYS_SET_IOCFG(IOP14CFG, SYS_IOCFG_P14_GPIO);	
-	// GPIO_CONFIG_IO_MODE(GPIO1,GPIO_PIN_4,GPIO_MODE_OUTPUT);		/*Ö¸Ê¾±È½ÏµãÖÐ¶Ï*/
-	// GPIO1->DO_f.P4 = 0;		
-	
 }

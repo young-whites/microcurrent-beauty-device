@@ -1,24 +1,14 @@
 #include "cms32f033.h"
-#include "key.h"
-#include "bsp_timer.h"
 #include "clock.h"
-#include "TM1639.h"
 #include "system.h"
 #include "gpioctl.h"
 #include "gpio.h"
-#include "app_epwm.h"
-#include "app_adc1.h"
-#include "battery.h"
 #include "Device_Init.h"
 #include "bsp_uart.h"
 #include "string.h"
-#include "ch455.h"
-#include "gpioctl.h"
-#include "bsp_adc.h"
 #include "uart.h"
 #include "fmc.h"
 #include "flash_operate.h"
-// #include    "Ymode.h"
 
 #define begin_adress  0x7000
 
@@ -157,26 +147,26 @@ void  Update_CommandReceive( u8 data)
 int main(void)
 {
 	CLOCK_Init();//时钟初�?�化
-	Dveice_Init(48000);////初�?�化延迟函数滴答计时�?????
-	__disable_irq();//关中�?????
+	Dveice_Init(48000);////初�?�化延迟函数滴答计时�?????
+	__disable_irq();//关中�?????
     gpio_init();//IO口初始化
 	UART_UART1_Config();
 	UART_ReceiveValueInit(&USART3_QueueBuf,UART_DATALENGTH);
 	// System_Device_Init();//系统初�?�化
-	__enable_irq();	//开�?????�?????
+	__enable_irq();	//开�?????�?????
 
 	delay_ms(100);
     up_flag=IAP_ReadOneWord(0x1C000000,0x55);
     delay_ms(100);
     upgr_flag=IAP_ReadOneWord(0x1C000200,0x55);
-    if(up_flag!=0x33)//复位，�?�置�??动位�??至APP
+    if(up_flag!=0x33)//复位，�?�置�??动位�??至APP
     {
         // UART_SendData(UART1,up_flag);
         // UART_SendDatas(UART1,"goapp\r\n",strlen("goapp\r\n"));
         // delay_ms(200);
        IAP_Reset();
     }
-      if(upgr_flag!=0x33)//复位，�?�置�??动位�??至APP
+      if(upgr_flag!=0x33)//复位，�?�置�??动位�??至APP
     {
         upDATE_Flag=1;
     }
@@ -191,7 +181,7 @@ int main(void)
         {
             IAP_Erase_512B(0x1C000200,0xAA);
             delay_ms(10);
-            IAP_WriteOneWord(0x1C000200,0x33,0x55);//写入进入升级流程标志�??
+            IAP_WriteOneWord(0x1C000200,0x33,0x55);//写入进入升级流程标志�??
             delay_ms(100);
             UART_SendData(UART1,0x43);
             delay_ms(200);
@@ -199,7 +189,7 @@ int main(void)
             // upgr_flag=1;
 
         }
-        else//打断后流�??
+        else//打断后流�??
         {
             UART_SendDatas(UART1,"UPGR\r\n",strlen("UPGR\r\n"));
             delay_ms(200);
