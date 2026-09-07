@@ -1,0 +1,87 @@
+T2AE8 020:220.844   SEGGER J-Link V9.74 Log File
+T2AE8 020:220.946   DLL Compiled: Sep  2 2026 12:26:16
+T2AE8 020:220.960   Logging started @ 2026-09-04 06:41
+T2AE8 020:220.972   Process: D:\Keil_v5\UV4\UV4.exe
+T2AE8 020:220.982 - 12.321ms 
+T2AE8 020:221.000 JLINK_SetWarnOutHandler(...)
+T2AE8 020:221.012 - 0.011ms 
+T2AE8 020:221.024 JLINK_OpenEx(...)
+T2AE8 020:222.796   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T2AE8 020:223.708   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T2AE8 020:223.892   Decompressing FW timestamp took 157 us
+T2AE8 020:230.158   Hardware: V9.20
+T2AE8 020:230.188   S/N: 59800889
+T2AE8 020:230.198   OEM: SEGGER
+T2AE8 020:230.210   Feature(s): RDI, GDB, FlashDL, FlashBP, JFlash
+T2AE8 020:231.092   Bootloader: (FW returned invalid version)
+T2AE8 020:232.714   TELNET listener socket opened on port 19021
+T2AE8 020:238.342   WEBSRV WEBSRV_Init(): Starting webserver thread(s)
+T2AE8 020:238.570   WEBSRV Webserver running on local port 19080
+T2AE8 020:238.820   Looking for J-Link GUI Server exe at: D:\Keil_v5\ARM\Segger\JLinkGUIServer.exe
+T2AE8 020:239.104   Looking for J-Link GUI Server exe at: C:\Program Files\SEGGER\JLink_V974\JLinkGUIServer.exe
+T2AE8 020:239.234   Forking J-Link GUI Server: C:\Program Files\SEGGER\JLink_V974\JLinkGUIServer.exe
+T2AE8 020:274.508   J-Link GUI Server info: "J-Link GUI server V9.74 "
+T2AE8 020:274.998 - 53.973ms returns "O.K."
+T2AE8 020:275.042 JLINK_GetEmuCaps()
+T2AE8 020:275.056 - 0.014ms returns 0xB9FF7BBF
+T2AE8 020:275.074 JLINK_TIF_GetAvailable(...)
+T2AE8 020:275.242 - 0.167ms 
+T2AE8 020:275.272 JLINK_SetErrorOutHandler(...)
+T2AE8 020:275.284 - 0.013ms 
+T2AE8 020:275.314 JLINK_ExecCommand("ProjectFile = "C:\Users\18452\Documents\GitHub-young-whites\microcurrent-beauty-device\sourceCode\MDK_Project\JLinkSettings.ini"", ...). 
+T2AE8 020:280.190 - 4.876ms returns 0x00
+T2AE8 020:280.526 JLINK_ExecCommand("Device = CMS32F033", ...). 
+T2AE8 020:282.068   Looking for J-Link GUI Server exe at: D:\Keil_v5\ARM\Segger\JLinkGUIServer.exe
+T2AE8 020:282.354   Looking for J-Link GUI Server exe at: C:\Program Files\SEGGER\JLink_V974\JLinkGUIServer.exe
+T2AE8 020:282.492   Forking J-Link GUI Server: C:\Program Files\SEGGER\JLink_V974\JLinkGUIServer.exe
+T2AE8 020:319.844   J-Link GUI Server info: "J-Link GUI server V9.74 "
+T2AE8 022:437.188   ERROR: Failed to set device
+T2AE8 022:437.322 - 2156.794ms returns 0xFFFFFFFF
+T2AE8 022:438.072   ERROR: Unknown command
+T2AE8 022:438.106 JLINK_GetHardwareVersion()
+T2AE8 022:438.118 - 0.011ms returns 92000
+T2AE8 022:438.132 JLINK_GetDLLVersion()
+T2AE8 022:438.144 - 0.011ms returns 97400
+T2AE8 022:438.156 JLINK_GetOEMString(...)
+T2AE8 022:438.170 JLINK_GetFirmwareString(...)
+T2AE8 022:438.180 - 0.011ms 
+T2AE8 022:438.200 JLINK_GetDLLVersion()
+T2AE8 022:438.212 - 0.011ms returns 97400
+T2AE8 022:438.224 JLINK_GetCompileDateTime()
+T2AE8 022:438.236 - 0.011ms 
+T2AE8 022:438.250 JLINK_GetFirmwareString(...)
+T2AE8 022:438.262 - 0.011ms 
+T2AE8 022:438.276 JLINK_GetHardwareVersion()
+T2AE8 022:438.288 - 0.012ms returns 92000
+T2AE8 022:438.300 JLINK_GetSN()
+T2AE8 022:438.308 - 0.008ms returns 59800889
+T2AE8 022:438.320 JLINK_GetOEMString(...)
+T2AE8 022:438.332 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T2AE8 022:439.140 - 0.807ms returns 0x00
+T2AE8 022:439.178 JLINK_HasError()
+T2AE8 022:439.196 JLINK_SetSpeed(5000)
+T2AE8 022:439.318 - 0.123ms 
+T2AE8 022:439.844 JLINK_HasError()
+T2AE8 022:439.864 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T2AE8 022:439.874 - 0.008ms returns JLINKARM_RESET_TYPE_NORMAL
+T2AE8 022:439.884 JLINK_Reset()
+T2AE8 022:440.042   
+  ***** Error: 
+T2AE8 022:440.066   No CPU core or target device has been selected. Please make sure at least the core J-Link shall connect to, is selected.
+T2AE8 022:440.076 - 0.193ms 
+T2AE8 022:440.094 JLINK_GetId()
+T2AE8 022:440.292   
+  ***** Error: 
+T2AE8 022:440.312   No CPU core or target device has been selected. Please make sure at least the core J-Link shall connect to, is selected.
+T2AE8 022:440.324 - 0.229ms returns 0x00000000
+T2AE8 022:440.340 JLINK_GetId()
+T2AE8 022:440.680   
+  ***** Error: 
+T2AE8 022:440.700   No CPU core or target device has been selected. Please make sure at least the core J-Link shall connect to, is selected.
+T2AE8 022:440.714 - 0.373ms returns 0x00000000
+T2AE8 022:442.890 JLINK_GetFirmwareString(...)
+T2AE8 022:442.916 - 0.027ms 
+T2AE8 023:009.380 JLINK_Close()
+T2AE8 023:021.444 - 12.064ms
+T2AE8 023:021.492   
+T2AE8 023:021.500   Closed
